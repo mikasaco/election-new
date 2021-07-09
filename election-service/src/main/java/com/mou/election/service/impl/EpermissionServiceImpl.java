@@ -1,13 +1,15 @@
 package com.mou.election.service.impl;
 
-import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.mou.election.EPermissionManager;
+import com.mou.election.model.EPageResult;
 import com.mou.election.model.EPermissionDTO;
+import com.mou.election.model.EroleDTO;
 import com.mou.election.service.EPermissionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -21,6 +23,7 @@ public class EpermissionServiceImpl implements EPermissionService {
 
     @Autowired
     private EPermissionManager permissionManager;
+
 
     @Override
     public void add(EPermissionDTO dto) {
@@ -47,11 +50,11 @@ public class EpermissionServiceImpl implements EPermissionService {
         return permissionManager.query(dto);
     }
 
+
     @Override
     public PageInfo<EPermissionDTO> pageQuery(EPermissionDTO permissionDTO) {
-        PageHelper.startPage(permissionDTO.getCurrentPageNo(), permissionDTO.getPageSize());
-        List<EPermissionDTO> permissionDTOList = permissionManager.query(permissionDTO);
-        return new PageInfo<>(permissionDTOList);
+        return permissionManager.pageQuery(permissionDTO);
     }
+
 
 }

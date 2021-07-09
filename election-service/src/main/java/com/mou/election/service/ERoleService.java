@@ -1,5 +1,6 @@
 package com.mou.election.service;
 
+import com.github.pagehelper.PageInfo;
 import com.mou.election.model.EroleDTO;
 
 import java.util.List;
@@ -10,13 +11,17 @@ import java.util.List;
  * @author 沈林强(四笠)
  * @date 2021/7/4
  */
-public interface EroleService {
+public interface ERoleService {
 
     void add(EroleDTO addDTO);
+
+    EroleDTO get(Long id);
 
     List<EroleDTO> query(EroleDTO queryDTO);
 
     void update(EroleDTO euserDTO);
 
     void delete(Long id);
+
+    PageInfo<EroleDTO> pageQuery(EroleDTO eroleDTO);
 }

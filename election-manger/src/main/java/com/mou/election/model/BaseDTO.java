@@ -20,4 +20,6 @@ public class BaseDTO implements Serializable {
     private Integer currentPageNo;
 
     private Integer pageSize;
+
+
 }

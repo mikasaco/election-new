@@ -10,6 +10,7 @@ import com.mou.election.constants.EConstants;
 import com.mou.election.enums.ErrorCodeEnum;
 import com.mou.election.enums.LoginTypeEnum;
 import com.mou.election.exception.EbizException;
+import com.mou.election.model.EPageResult;
 import com.mou.election.model.EroleDTO;
 import com.mou.election.model.EUserDTO;
 import com.mou.election.service.EuserService;
@@ -18,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -152,9 +154,6 @@ public class EuserServiceImpl implements EuserService {
 
     @Override
     public PageInfo<EUserDTO> pageQuery(EUserDTO queryDTO){
-        PageHelper.startPage(queryDTO.getCurrentPageNo(), queryDTO.getPageSize());
-        List<EUserDTO> userDTOS = userManager.query(queryDTO);
-        return new PageInfo<>(userDTOS);
-
+        return userManager.pageQuery(queryDTO);
     }
 }

@@ -37,11 +37,9 @@ public class EPageResult<T> extends EResult<T> {
      */
     private String keyWord;
 
-    public static EPageResult newSuccessInstance(PageInfo pageInfo,Object data) {
+    public static EPageResult newSuccessInstance(Long total, Object data) {
         EPageResult pageResult = new EPageResult();
-        pageResult.setPageSize(pageInfo.getPageSize());
-        pageResult.setCurrentPageNo(pageInfo.getPageNum());
-        pageResult.setTotalItems(pageInfo.getTotal());
+        pageResult.setTotalItems(total);
         pageResult.setSuccess(true);
         pageResult.setData(data);
         return pageResult;

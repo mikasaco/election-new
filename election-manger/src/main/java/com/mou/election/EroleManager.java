@@ -1,9 +1,14 @@
 package com.mou.election;
 
 import com.alibaba.fastjson.JSONObject;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.github.pagehelper.util.StringUtil;
 import com.mou.election.constants.EConstants;
 import com.mou.election.convert.EroleConvert;
+import com.mou.election.dal.domian.EmessageDO;
+import com.mou.election.dal.domian.EpermissionDOExample;
 import com.mou.election.dal.domian.EroleDO;
 import com.mou.election.dal.domian.EroleDOExample;
 import com.mou.election.dal.mapper.EroleDOMapper;
@@ -82,15 +87,19 @@ public class EroleManager {
         return eroleDTO;
     }
 
+    public PageInfo<EroleDTO> pageQuery(EroleDTO queryDTO){
+        EroleDOExample example = buildExample(queryDTO);
+        Page<EroleDO> page = PageHelper.startPage(queryDTO.getCurrentPageNo(),queryDTO.getPageSize())
+                .doSelectPage(()->eroleDOMapper.selectByExample(example));
+        List<EroleDTO> collect = page.getResult().stream().map(EroleConvert::do2dto).collect(Collectors.toList());
+        PageInfo pageInfo = new PageInfo();
+        pageInfo.setTotal(page.getTotal());
+        pageInfo.setList(collect);
+        return pageInfo;
+    }
+
     public List<EroleDTO> query(EroleDTO queryDTO) {
-        EroleDOExample example = new EroleDOExample();
-        EroleDOExample.Criteria criteria = example.createCriteria();
-        if (queryDTO.getRoleName() != null) {
-            criteria.andRoleNameLike("%" + queryDTO.getRoleName() + "%");
-        }
-        if (queryDTO.getRoleCode() != null) {
-            criteria.andRoleCodeLike("%" + queryDTO.getRoleCode() + "%");
-        }
+        EroleDOExample example = buildExample(queryDTO);
         List<EroleDO> eroleDOS = eroleDOMapper.selectByExample(example);
         return eroleDOS.stream().map(eroleDO -> {
             EroleDTO eroleDTO = EroleConvert.do2dto(eroleDO);
@@ -113,6 +122,24 @@ public class EroleManager {
             }
         }
         return roleDTO;
-
     }
+
+
+    public int count(EroleDTO dto){
+        EroleDOExample example = buildExample(dto);
+        return eroleDOMapper.countByExample(example);
+    }
+
+    private EroleDOExample  buildExample(EroleDTO dto){
+        EroleDOExample example = new EroleDOExample();
+        EroleDOExample.Criteria criteria = example.createCriteria();
+        if (dto.getRoleCode() != null) {
+            criteria.andRoleCodeLike("%" + dto.getRoleCode() + "%");
+        }
+        if (dto.getRoleName() != null) {
+            criteria.andRoleNameLike("%" + dto.getRoleName() + "%");
+        }
+        return example;
+    }
+
 }

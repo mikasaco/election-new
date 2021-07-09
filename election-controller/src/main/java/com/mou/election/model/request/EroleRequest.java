@@ -17,7 +17,7 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
-public class EroleRequest implements Serializable {
+public class EroleRequest extends BaseRequest implements Serializable {
 
     private static final long serialVersionUID = 120556014684579765L;
 

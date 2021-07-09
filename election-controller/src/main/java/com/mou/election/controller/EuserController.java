@@ -8,11 +8,16 @@ import com.mou.election.convert.ResponseConvert;
 import com.mou.election.model.EPageResult;
 import com.mou.election.model.EResult;
 import com.mou.election.model.EUserDTO;
+import com.mou.election.model.EroleDTO;
 import com.mou.election.model.request.EUserReqeust;
+import com.mou.election.model.request.EroleRequest;
 import com.mou.election.model.vo.EUserLoginVO;
 import com.mou.election.model.vo.EUserVO;
+import com.mou.election.model.vo.EroleVO;
 import com.mou.election.service.EuserService;
 import com.mou.election.utils.TokenUtils;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -76,12 +81,18 @@ public class EuserController {
         return EResult.newSuccessInstance(euserVOS);
     }
 
+    @RequestMapping("get/{id}")
+    public EResult<EUserVO> get(@PathVariable Long id) {
+        EUserDTO userDTO = euserService.getUserById(id);
+        return EResult.newSuccessInstance(ResponseConvert.userDTO2VO(userDTO));
+    }
+
+
     @RequestMapping("pageQuery")
-    public EPageResult<EUserVO> pageQuery(@RequestBody EUserReqeust request) {
-        EUserDTO userDTO = RequestConvert.userRequest2DTO(request);
-        PageInfo<EUserDTO> pageInfo = euserService.pageQuery(userDTO);
-        List<EUserVO> userVOList = pageInfo.getList().stream().map(ResponseConvert::userDTO2VO).collect(Collectors.toList());
-        return EPageResult.newSuccessInstance(pageInfo,userVOList);
+    public EPageResult<List<EUserVO>> pageQuery(@RequestBody EUserReqeust request) {
+        PageInfo<EUserDTO> pageInfo = euserService.pageQuery(RequestConvert.userRequest2DTO(request));
+        List<EUserVO> eroleVOS = pageInfo.getList().stream().map(ResponseConvert::userDTO2VO).collect(Collectors.toList());
+        return EPageResult.newSuccessInstance(pageInfo.getTotal(),eroleVOS);
     }
 
 }

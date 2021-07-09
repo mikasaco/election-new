@@ -1,12 +1,19 @@
 package com.mou.election;
 
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.mou.election.convert.EpermissionConvert;
+import com.mou.election.convert.EroleConvert;
 import com.mou.election.dal.domian.EpermissionDO;
 import com.mou.election.dal.domian.EpermissionDOExample;
+import com.mou.election.dal.domian.EroleDO;
+import com.mou.election.dal.domian.EroleDOExample;
 import com.mou.election.dal.mapper.EpermissionDOMapper;
 import com.mou.election.enums.ErrorCodeEnum;
 import com.mou.election.exception.EbizException;
 import com.mou.election.model.EPermissionDTO;
+import com.mou.election.model.EroleDTO;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -68,14 +75,44 @@ public class EPermissionManager {
         return EpermissionConvert.do2dto(epermissionDOS.get(0));
     }
 
-    public List<EPermissionDTO> query(EPermissionDTO dto) {
+    public int count(EPermissionDTO dto){
+        EpermissionDOExample example = buildExample(dto);
+        return permissionDOMapper.countByExample(example);
+    }
+
+    private EpermissionDOExample  buildExample(EPermissionDTO dto){
         EpermissionDOExample example = new EpermissionDOExample();
+        EpermissionDOExample.Criteria criteria = example.createCriteria();
         if (dto.getPermissionCode() != null) {
-            example.createCriteria().andPermissionCodeLike("%" + dto.getPermissionCode() +"%");
+            criteria.andPermissionCodeLike("%" + dto.getPermissionCode() + "%");
         }
         if (dto.getPermissionName() != null) {
-            example.createCriteria().andPermissionNameLike("%" + dto.getPermissionCode() +"%");
+            criteria.andPermissionNameLike("%" + dto.getPermissionCode() + "%");
         }
+        return example;
+    }
+
+    public PageInfo<EPermissionDTO> pageQuery(EPermissionDTO queryDTO){
+        EpermissionDOExample example = buildExample(queryDTO);
+        Page<EpermissionDO> page = PageHelper.startPage(queryDTO.getCurrentPageNo(),queryDTO.getPageSize())
+                .doSelectPage(()->permissionDOMapper.selectByExample(example));
+        List<EPermissionDTO> collect = page.getResult().stream().map(EpermissionConvert::do2dto).collect(Collectors.toList());
+        PageInfo pageInfo = new PageInfo();
+        pageInfo.setTotal(page.getTotal());
+        pageInfo.setList(collect);
+        return pageInfo;
+    }
+
+    public List<EPermissionDTO> query(EPermissionDTO dto) {
+        EpermissionDOExample example = new EpermissionDOExample();
+        EpermissionDOExample.Criteria criteria = example.createCriteria();
+        if (dto.getPermissionCode() != null) {
+            criteria.andPermissionCodeLike("%" + dto.getPermissionCode() + "%");
+        }
+        if (dto.getPermissionName() != null) {
+            criteria.andPermissionNameLike("%" + dto.getPermissionCode() + "%");
+        }
+
         List<EpermissionDO> epermissionDOS = permissionDOMapper.selectByExample(example);
         return epermissionDOS.stream().map(EpermissionConvert::do2dto).collect(Collectors.toList());
     }

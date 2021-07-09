@@ -46,6 +46,13 @@ public class EPermissionController {
         return EResult.newSuccessInstance(Boolean.TRUE);
     }
 
+    @RequestMapping("get/{id}")
+    public EResult<EPermissionVO> get(@PathVariable Long id) {
+        EPermissionDTO permissionDTO = permissionService.get(id);
+        return EResult.newSuccessInstance(ResponseConvert.permissionDTO2VO(permissionDTO));
+    }
+
+
     @RequestMapping("query")
     public EResult<List<EPermissionVO>> query(@RequestBody EPermissionRequest request) {
         List<EPermissionDTO> query = permissionService.query(RequestConvert.permissionRequest2DTO(request));
@@ -54,10 +61,10 @@ public class EPermissionController {
     }
 
     @RequestMapping("pageQuery")
-    public EPageResult<EPermissionVO> pageQuery(@RequestBody EPermissionRequest request) {
-        PageInfo<EPermissionDTO> pageInfo = permissionService.pageQuery(RequestConvert.permissionRequest2DTO(request));
-        List<EPermissionVO> permissionVOS = pageInfo.getList().stream().map(ResponseConvert::permissionDTO2VO).collect(Collectors.toList());
-        return EPageResult.newSuccessInstance(pageInfo,permissionVOS);
+    public EPageResult<List<EPermissionVO>> pageQuery(@RequestBody EPermissionRequest request) {
+        PageInfo<EPermissionDTO> result = permissionService.pageQuery(RequestConvert.permissionRequest2DTO(request));
+        List<EPermissionVO> permissionVOS = result.getList().stream().map(ResponseConvert::permissionDTO2VO).collect(Collectors.toList());
+        return EPageResult.newSuccessInstance(result.getTotal(),permissionVOS);
     }
 }
 

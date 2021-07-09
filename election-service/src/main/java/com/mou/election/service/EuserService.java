@@ -1,6 +1,7 @@
 package com.mou.election.service;
 
 import com.github.pagehelper.PageInfo;
+import com.mou.election.model.EPageResult;
 import com.mou.election.model.EUserDTO;
 
 import java.util.List;

@@ -17,7 +17,15 @@ public class InterceptorConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(authenticationInterceptor())
-                .addPathPatterns("/**");
+                .addPathPatterns("/**")
+                .excludePathPatterns("/swagger-ui.html")
+                .excludePathPatterns("/configuration/ui")
+                .excludePathPatterns("/swagger-resources")
+                .excludePathPatterns("/configuration/security")
+                .excludePathPatterns("/v2/api-docs")
+                .excludePathPatterns("/error")
+                .excludePathPatterns("/webjars/**")
+                .excludePathPatterns("/**/favicon.ico");
     }
     @Bean
     public AuthenticationInterceptor authenticationInterceptor() {

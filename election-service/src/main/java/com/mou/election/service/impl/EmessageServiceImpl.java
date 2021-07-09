@@ -49,7 +49,7 @@ public class EmessageServiceImpl implements EmessageService {
             euserMessageDO.setMessageId(uuid);
             euserMessageDO.setIsReceipt(messageDO.getIsReceipt());
             euserMessageDO.setMessageReplyStatus(ElectionConstants.REPLY_STATUS_N);
-            euserMessageDO.setReadStatus(ElectionConstants.READ_STATUS_N);
+//            euserMessageDO.setReadStatus(ElectionConstants.READ_STATUS_N);
             euserMessageDO.setPopupStatus(ElectionConstants.POPUP_STATUS_N);
             euserMessageDO.setIsChangeTerm(messageDO.getIsChangeTerm());
             euserMessageDO.setCreateTime(new Date());

@@ -1,7 +1,9 @@
 package com.mou.election.service;
 
 import com.github.pagehelper.PageInfo;
+import com.mou.election.model.EPageResult;
 import com.mou.election.model.EPermissionDTO;
+import com.mou.election.model.EroleDTO;
 
 import java.util.List;
 
@@ -23,5 +25,6 @@ public interface EPermissionService {
 
     List<EPermissionDTO> query(EPermissionDTO dto);
 
-    PageInfo<EPermissionDTO> pageQuery(EPermissionDTO permissionDTO);
+
+    PageInfo<EPermissionDTO> pageQuery(EPermissionDTO dto);
 }

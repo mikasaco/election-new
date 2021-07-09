@@ -1,14 +1,20 @@
 package com.mou.election;
 
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.github.pagehelper.util.StringUtil;
+import com.mou.election.convert.EroleConvert;
 import com.mou.election.convert.EuserConvert;
+import com.mou.election.dal.domian.EroleDO;
+import com.mou.election.dal.domian.EroleDOExample;
 import com.mou.election.dal.domian.EuserDO;
 import com.mou.election.dal.domian.EuserDOExample;
 import com.mou.election.dal.mapper.EuserDOMapper;
 import com.mou.election.enums.ErrorCodeEnum;
 import com.mou.election.exception.EbizException;
 import com.mou.election.model.EUserDTO;
+import com.mou.election.model.EroleDTO;
 import com.mou.election.utils.TokenUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -127,4 +133,25 @@ public class EUserManager {
         return EuserConvert.do2dto(euserDO);
     }
 
+    public PageInfo<EUserDTO> pageQuery(EUserDTO queryDTO) {
+        EuserDOExample example = buildExample(queryDTO);
+        Page<EuserDO> page = PageHelper.startPage(queryDTO.getCurrentPageNo(),queryDTO.getPageSize())
+                .doSelectPage(()->euserDOMapper.selectByExample(example));
+        List<EUserDTO> collect = page.getResult().stream().map(EuserConvert::do2dto).collect(Collectors.toList());
+        PageInfo pageInfo = new PageInfo();
+        pageInfo.setTotal(page.getTotal());
+        pageInfo.setList(collect);
+        return pageInfo;
+    }
+
+    private EuserDOExample buildExample(EUserDTO queryDTO) {
+        EuserDOExample example = new EuserDOExample();
+        EuserDOExample.Criteria criteria = example.createCriteria();
+        if (queryDTO.getPost() != null){
+            criteria.andPostEqualTo(queryDTO.getPost());
+        }
+        return example;
+
+
+    }
 }

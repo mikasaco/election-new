@@ -18,7 +18,7 @@ import java.util.List;
 @Getter
 @Setter
 @ToString
-public class EroleDTO implements Serializable {
+public class EroleDTO extends BaseDTO implements Serializable {
 
     private static final long serialVersionUID = -2047829356677327606L;
     private Long id;
