@@ -1,5 +1,6 @@
 package com.mou.election.model;
 
+import com.mou.election.enums.ApplyDelayEnum;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -27,7 +28,7 @@ public class EApplyDTO {
     private Long userId;
 
 
-    private String delay;
+    private ApplyDelayEnum delay;
 
 
     private Date applyElectionDate;
@@ -39,4 +40,6 @@ public class EApplyDTO {
 
 
     private String status;
+
+    private EUserDTO userDTO;
 }

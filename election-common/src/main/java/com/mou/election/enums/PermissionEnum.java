@@ -51,6 +51,6 @@ public enum PermissionEnum {
                 return value;
             }
         }
-        throw new EbizException(ErrorCodeEnum.PERMISSION_ENUM_NOT_EXIST);
+        throw new EbizException(ErrorCodeEnum.ENUM_NOT_EXIST);
     }
 }

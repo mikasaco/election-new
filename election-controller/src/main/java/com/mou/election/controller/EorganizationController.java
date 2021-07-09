@@ -1,10 +1,14 @@
 package com.mou.election.controller;
 
+import com.github.pagehelper.PageInfo;
 import com.mou.election.convert.RequestConvert;
 import com.mou.election.convert.ResponseConvert;
+import com.mou.election.model.EPageResult;
+import com.mou.election.model.EPermissionDTO;
 import com.mou.election.model.EResult;
 import com.mou.election.model.EorganizationDTO;
 import com.mou.election.model.request.EorganizationRequest;
+import com.mou.election.model.vo.EPermissionVO;
 import com.mou.election.model.vo.EorganizationVO;
 import com.mou.election.service.EorganizationService;
 import lombok.extern.slf4j.Slf4j;
@@ -40,8 +44,8 @@ public class EorganizationController {
         return EResult.newSuccessInstance(Boolean.TRUE);
     }
 
-    @RequestMapping(value = "/delete/{id}", method = RequestMethod.DELETE)
-    public EResult<Boolean> update(@PathVariable Long id){
+    @RequestMapping(value = "/delete/{id}")
+    public EResult<Boolean> delete(@PathVariable Long id){
         eorganizationService.delete(id);
         return EResult.newSuccessInstance(Boolean.TRUE);
     }
@@ -51,6 +55,13 @@ public class EorganizationController {
         List<EorganizationDTO> query = eorganizationService.query(RequestConvert.organizationRequest2DTO(request));
         List<EorganizationVO> vos = query.stream().map(ResponseConvert::organizationDTO2VO).collect(Collectors.toList());
         return EResult.newSuccessInstance(vos);
+    }
+
+    @RequestMapping("pageQuery")
+    public EPageResult<List<EorganizationVO>> pageQuery(@RequestBody EorganizationRequest request){
+        PageInfo<EorganizationDTO> result = eorganizationService.pageQuery(RequestConvert.organizationRequest2DTO(request));
+        List<EorganizationVO> permissionVOS = result.getList().stream().map(ResponseConvert::organizationDTO2VO).collect(Collectors.toList());
+        return EPageResult.newSuccessInstance(result.getTotal(),permissionVOS);
     }
 
 }

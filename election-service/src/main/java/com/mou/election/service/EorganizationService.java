@@ -1,5 +1,6 @@
 package com.mou.election.service;
 
+import com.github.pagehelper.PageInfo;
 import com.mou.election.model.EorganizationDTO;
 
 import java.util.List;
@@ -19,4 +20,6 @@ public interface EorganizationService {
     void update(EorganizationDTO euserDTO);
 
     void delete(Long id);
+
+    PageInfo<EorganizationDTO> pageQuery(EorganizationDTO organizationRequest2DTO);
 }

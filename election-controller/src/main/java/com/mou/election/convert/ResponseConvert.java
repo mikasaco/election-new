@@ -27,6 +27,24 @@ public class ResponseConvert {
     public static EUserVO userDTO2VO(EUserDTO userDTO) {
         EUserVO euserVO = new EUserVO();
         BeanUtils.copyProperties(userDTO, euserVO);
+        if(!CollectionUtils.isEmpty(userDTO.getRoleDTOS())){
+            euserVO.setRoleVOS(userDTO.getRoleDTOS().stream()
+                    .map(roleDTO->{
+                        EroleVO eroleVO = new EroleVO();
+                        eroleVO.setRoleCode(roleDTO.getRoleCode());
+                        eroleVO.setRoleName(roleDTO.getRoleName());
+                        return eroleVO;
+                    }).collect(Collectors.toList()));
+        }
+        if (!CollectionUtils.isEmpty(userDTO.getPermissionDTOS())){
+            euserVO.setPermissionVOS(userDTO.getPermissionDTOS().stream()
+            .map(permissionDTO -> {
+                EPermissionVO permissionVO = new EPermissionVO();
+                permissionVO.setPermissionCode(permissionDTO.getPermissionCode());
+                permissionVO.setPermissionName(permissionDTO.getPermissionName());
+                return permissionVO;
+            }).collect(Collectors.toList()));
+        }
         return euserVO;
     }
 
@@ -48,13 +66,19 @@ public class ResponseConvert {
         return vo;
     }
 
+    public static EApplyVO applyDTO2VO(EApplyDTO dto) {
+        EApplyVO vo = new EApplyVO();
+        BeanUtils.copyProperties(dto, vo);
+        return vo;
+    }
+
     public static EroleVO roleDTO2VO(EroleDTO dto) {
         EroleVO vo = new EroleVO();
         BeanUtils.copyProperties(dto, vo);
         if(!CollectionUtils.isEmpty(dto.getPermissionDTOList())){
             List<EPermissionVO> epermissionVOS = dto.getPermissionDTOList().stream().map(ResponseConvert::permissionDTO2VO).collect(Collectors.toList());
             epermissionVOS.forEach(permissionVO->{
-                vo.putpermissionCode(permissionVO.getPermissionCode());
+                vo.putpermissionVO(permissionVO);
             });
         }
         return vo;

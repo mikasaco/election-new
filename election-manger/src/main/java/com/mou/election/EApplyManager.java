@@ -29,6 +29,7 @@ public class EApplyManager {
         EApplyDO applyDO = EapplyConvert.dto2do(applyDTO);
         applyDO.setGmtCreate(new Date());
         applyDO.setGmtModified(new Date());
+        applyDO.setStatus("PROCESSING");
         applyDOMapper.insert(applyDO);
     }
 
@@ -42,8 +43,8 @@ public class EApplyManager {
         applyDOMapper.deleteByPrimaryKey(id);
     }
 
-    public EApplyDTO get(EApplyDTO getDTO) {
-        EApplyDO applyDO = applyDOMapper.selectByPrimaryKey(getDTO.getId());
+    public EApplyDTO get(Long id) {
+        EApplyDO applyDO = applyDOMapper.selectByPrimaryKey(id);
         return EapplyConvert.do2dto(applyDO);
     }
 
@@ -54,7 +55,7 @@ public class EApplyManager {
             criteria.andStatusEqualTo(queryDTO.getStatus());
         }
         if (queryDTO.getDelay() != null) {
-            criteria.andDelayEqualTo(queryDTO.getDelay());
+            criteria.andDelayEqualTo(queryDTO.getDelay().getCode());
         }
         List<EApplyDO> eApplyDOS = applyDOMapper.selectByExample(example);
         if(CollectionUtils.isEmpty(eApplyDOS)){

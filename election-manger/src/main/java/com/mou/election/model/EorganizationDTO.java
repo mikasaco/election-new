@@ -16,7 +16,7 @@ import java.util.Date;
 @Getter
 @Setter
 @ToString
-public class EorganizationDTO implements Serializable {
+public class EorganizationDTO extends BaseDTO implements Serializable {
 
     private static final long serialVersionUID = 4632494208017857190L;
 

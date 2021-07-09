@@ -16,7 +16,7 @@ import java.util.Date;
 @Getter
 @Setter
 @ToString
-public class EorganizationRequest implements Serializable {
+public class EorganizationRequest extends BaseRequest implements Serializable {
 
     private static final long serialVersionUID = 1357082285397931768L;
 

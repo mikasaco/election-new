@@ -44,9 +44,9 @@ public class EUserVO {
 
     private String feature;
 
-    private List<String> roleCodes;
+    private List<EroleVO> roleVOS;
 
-    private List<String> permissionCodes;
+    private List<EPermissionVO> permissionVOS;
 
 
 }

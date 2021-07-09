@@ -32,15 +32,15 @@ public class EroleVO implements Serializable {
 
     private String roleName;
 
-    private List<String> permissionCodes;
+    private List<EPermissionVO> permissionVOS;
 
     private String feature;
 
-    public void putpermissionCode(String permissionCode){
-        if(this.permissionCodes ==null){
-            this.permissionCodes = new ArrayList<>();
+    public void putpermissionVO(EPermissionVO permissionCode){
+        if(this.permissionVOS ==null){
+            this.permissionVOS = new ArrayList<>();
         }
-        this.permissionCodes.add(permissionCode);
+        this.permissionVOS.add(permissionCode);
     }
 
 }

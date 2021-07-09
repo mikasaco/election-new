@@ -91,7 +91,11 @@ public class EroleManager {
         EroleDOExample example = buildExample(queryDTO);
         Page<EroleDO> page = PageHelper.startPage(queryDTO.getCurrentPageNo(),queryDTO.getPageSize())
                 .doSelectPage(()->eroleDOMapper.selectByExample(example));
-        List<EroleDTO> collect = page.getResult().stream().map(EroleConvert::do2dto).collect(Collectors.toList());
+        List<EroleDTO> collect = page.getResult().stream().map(eroleDO -> {
+                    EroleDTO eroleDTO = EroleConvert.do2dto(eroleDO);
+                    correlatePermission(eroleDTO);
+                    return eroleDTO;
+                }).collect(Collectors.toList());
         PageInfo pageInfo = new PageInfo();
         pageInfo.setTotal(page.getTotal());
         pageInfo.setList(collect);

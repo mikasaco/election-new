@@ -1,10 +1,17 @@
 package com.mou.election;
 
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.github.pagehelper.util.StringUtil;
 import com.mou.election.convert.EorganizationConvert;
+import com.mou.election.convert.EpermissionConvert;
 import com.mou.election.dal.domian.EorganizationDO;
 import com.mou.election.dal.domian.EorganizationDOExample;
+import com.mou.election.dal.domian.EpermissionDO;
+import com.mou.election.dal.domian.EpermissionDOExample;
 import com.mou.election.dal.mapper.EorganizationDOMapper;
+import com.mou.election.model.EPermissionDTO;
 import com.mou.election.model.EorganizationDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -57,5 +64,26 @@ public class EorganizationManager {
         }
         List<EorganizationDO> eorganizationDOS = eorganizationDOMapper.selectByExample(example);
         return eorganizationDOS.stream().map(EorganizationConvert::do2dto).collect(Collectors.toList());
+    }
+
+    public PageInfo<EorganizationDTO> pageQuery(EorganizationDTO eorganizationDTO) {
+        EorganizationDOExample example = buildExample(eorganizationDTO);
+        Page<EorganizationDO> page = PageHelper.startPage(eorganizationDTO.getCurrentPageNo(),eorganizationDTO.getPageSize())
+                .doSelectPage(()->eorganizationDOMapper.selectByExample(example));
+        List<EorganizationDTO> collect = page.getResult().stream().map(EorganizationConvert::do2dto).collect(Collectors.toList());
+        PageInfo pageInfo = new PageInfo();
+        pageInfo.setTotal(page.getTotal());
+        pageInfo.setList(collect);
+        return pageInfo;
+
+    }
+
+    private EorganizationDOExample buildExample(EorganizationDTO eorganizationDTO) {
+        EorganizationDOExample example = new EorganizationDOExample();
+        EorganizationDOExample.Criteria criteria = example.createCriteria();
+        if (StringUtil.isNotEmpty(eorganizationDTO.getOrganizationName())) {
+            criteria.andOrganizationNameLike(eorganizationDTO.getOrganizationName());
+        }
+        return example;
     }
 }

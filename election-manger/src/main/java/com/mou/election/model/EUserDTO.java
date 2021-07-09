@@ -53,22 +53,25 @@ public class EUserDTO extends BaseDTO implements Serializable {
 
     private LoginTypeEnum loginTypeEnum;
 
-    private List<String> roleCodes;
+    private List<EroleDTO> roleDTOS;
 
-    public void putRoleCode(String roleCode) {
-        if (this.roleCodes == null) {
-            this.roleCodes = new ArrayList<>();
+    private String jsCode;
+
+
+    public void putRoleDTO(EroleDTO roleDTO) {
+        if (this.roleDTOS == null) {
+            this.roleDTOS = new ArrayList<>();
         }
-        this.roleCodes.add(roleCode);
+        this.roleDTOS.add(roleDTO);
     }
 
-    private List<String> permissionCodes;
+    private List<EPermissionDTO> permissionDTOS;
 
-    public void putpermissionCode(String permissionCode) {
-        if (this.permissionCodes == null) {
-            this.permissionCodes = new ArrayList<>();
+    public void putpermissionDTO(EPermissionDTO permissionDTO) {
+        if (this.permissionDTOS == null) {
+            this.permissionDTOS = new ArrayList<>();
         }
-        this.permissionCodes.add(permissionCode);
+        this.permissionDTOS.add(permissionDTO);
     }
 
 }

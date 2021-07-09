@@ -34,7 +34,8 @@ public class EUserReqeust extends BaseRequest implements Serializable {
 
     private String password;
 
-    private String openId;
+    private String jsCode;
+
     @JsonFormat(pattern = "yyyy-MM-dd")
     private Date changeTermDate;
 

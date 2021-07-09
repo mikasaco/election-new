@@ -14,7 +14,7 @@ public enum ErrorCodeEnum {
     USER_EXIST("USER_EXIST","用户已存在"),
     PASSWORD_NOT_CORRECT("PASSWORD_NOT_CORRECT","密码不正确"),
     PARAM_ERROR("PARAM_ERROR","参数不合法"),
-    PERMISSION_ENUM_NOT_EXIST("PERMISSION_ENUM_NOT_EXIST","权限枚举不存在"),
+    ENUM_NOT_EXIST("ENUM_NOT_EXIST","枚举不存在"),
     TOKEN_OPEN_ID_FAILED("TOKEN_OPEN_ID_ERROR","获取微信凭证失败"),
     OPEN_ID_BIND("OPEN_ID_BIND","用户已绑定微信，不允许重复绑定")
     ;

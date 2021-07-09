@@ -1,7 +1,6 @@
 package com.mou.election.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
-import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.github.pagehelper.util.StringUtil;
 import com.mou.election.EroleManager;
@@ -10,7 +9,6 @@ import com.mou.election.constants.EConstants;
 import com.mou.election.enums.ErrorCodeEnum;
 import com.mou.election.enums.LoginTypeEnum;
 import com.mou.election.exception.EbizException;
-import com.mou.election.model.EPageResult;
 import com.mou.election.model.EroleDTO;
 import com.mou.election.model.EUserDTO;
 import com.mou.election.service.EuserService;
@@ -19,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,10 +42,11 @@ public class EuserServiceImpl implements EuserService {
     public EUserDTO login(EUserDTO userDTO) {
         EUserDTO euserDTO = null;
         if (LoginTypeEnum.OPENID.equals(userDTO.getLoginTypeEnum())) {
-            if (StringUtil.isEmpty(userDTO.getOpenId())) {
+            if (StringUtil.isEmpty(userDTO.getJsCode())) {
                 throw new EbizException(ErrorCodeEnum.WEIXIN_NOT_BIND);
             }
-            euserDTO = userManager.getUserByOpenId(userDTO.getOpenId());
+            String openId = getOpenId(userDTO.getJsCode());
+            euserDTO = userManager.getUserByOpenId(openId);
             if (null == euserDTO) {
                 throw new EbizException(ErrorCodeEnum.USER_NOT_EXIST);
             }
@@ -94,13 +92,19 @@ public class EuserServiceImpl implements EuserService {
     }
 
     @Override
-    public void bindOpenId(String jsCode, EUserDTO euserDTO) {
+    public EUserDTO bindOpenId(String jsCode, EUserDTO euserDTO) {
         if (euserDTO == null) {
             throw new EbizException(ErrorCodeEnum.TOKEN_NOT_EXIST);
         }
         if (StringUtil.isNotEmpty(euserDTO.getOpenId())) {
             throw new EbizException(ErrorCodeEnum.OPEN_ID_BIND);
         }
+        String openId = getOpenId(jsCode);
+        euserDTO.setOpenId(openId);
+        return euserDTO;
+    }
+
+    private String getOpenId(String jsCode){
         Map<String, String> params = new HashMap<>(4);
         params.put("appid", EConstants.WEIXIN_APP_ID);
         params.put("secret", EConstants.WEIXIN_SECRET);
@@ -110,9 +114,9 @@ public class EuserServiceImpl implements EuserService {
         if (StringUtil.isNotEmpty(openId)) {
             throw new EbizException(ErrorCodeEnum.TOKEN_OPEN_ID_FAILED);
         }
-        euserDTO.setOpenId(openId);
-        userManager.update(euserDTO);
+        return openId;
     }
+
 
     @Override
     public EUserDTO getUserByPhone(String phone) {
@@ -139,12 +143,12 @@ public class EuserServiceImpl implements EuserService {
                     if (eroleDTO == null) {
                         return;
                     }
-                    dto.putRoleCode(roleCode);
+                    dto.putRoleDTO(eroleDTO);
                     if (CollectionUtils.isEmpty(eroleDTO.getPermissionDTOList())) {
                         return;
                     }
                     eroleDTO.getPermissionDTOList().forEach(permissionDTO -> {
-                        dto.putpermissionCode(permissionDTO.getPermissionCode());
+                        dto.putpermissionDTO(permissionDTO);
                     });
                 });
             }
@@ -154,6 +158,30 @@ public class EuserServiceImpl implements EuserService {
 
     @Override
     public PageInfo<EUserDTO> pageQuery(EUserDTO queryDTO){
-        return userManager.pageQuery(queryDTO);
+        PageInfo<EUserDTO> pageInfo = userManager.pageQuery(queryDTO);
+
+        pageInfo.getList().forEach(dto -> {
+            if (StringUtil.isNotEmpty(dto.getFeature())) {
+                Map<String, Object> map = JSONObject.parseObject(dto.getFeature(), Map.class);
+                List<String> roleCodes = JSONObject.parseArray((String) map.get(EConstants.ROLE), String.class);
+                if (CollectionUtils.isEmpty(roleCodes)) {
+                    return;
+                }
+                roleCodes.forEach(roleCode -> {
+                    EroleDTO eroleDTO = eroleManager.getByCode(roleCode);
+                    if (eroleDTO == null) {
+                        return;
+                    }
+                    dto.putRoleDTO(eroleDTO);
+                    if (CollectionUtils.isEmpty(eroleDTO.getPermissionDTOList())) {
+                        return;
+                    }
+                    eroleDTO.getPermissionDTOList().forEach(permissionDTO -> {
+                        dto.putpermissionDTO(permissionDTO);
+                    });
+                });
+            }
+        });
+        return pageInfo;
     }
 }

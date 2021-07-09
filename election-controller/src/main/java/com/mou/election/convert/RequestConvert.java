@@ -3,6 +3,7 @@ package com.mou.election.convert;
 import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.ImmutableMap;
 import com.mou.election.constants.EConstants;
+import com.mou.election.enums.ApplyDelayEnum;
 import com.mou.election.enums.LoginTypeEnum;
 import com.mou.election.model.*;
 import com.mou.election.model.request.*;
@@ -80,6 +81,13 @@ public class RequestConvert {
         EPermissionDTO permissionDTO = new EPermissionDTO();
         BeanUtils.copyProperties(request, permissionDTO);
         return permissionDTO;
+    }
+
+    public static EApplyDTO applyRequest2DTO(EApplyRequest request) {
+        EApplyDTO applyDTO = new EApplyDTO();
+        BeanUtils.copyProperties(request, applyDTO);
+        applyDTO.setDelay(ApplyDelayEnum.getApplyDelayByCode(request.getDelay()));
+        return applyDTO;
     }
 
 }

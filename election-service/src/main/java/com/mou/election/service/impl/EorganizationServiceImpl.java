@@ -1,5 +1,6 @@
 package com.mou.election.service.impl;
 
+import com.github.pagehelper.PageInfo;
 import com.mou.election.EorganizationManager;
 import com.mou.election.model.EorganizationDTO;
 import com.mou.election.service.EorganizationService;
@@ -39,4 +40,12 @@ public class EorganizationServiceImpl implements EorganizationService {
     public void delete(Long id) {
         eorganizationManager.delete(id);
     }
+
+    @Override
+    public PageInfo<EorganizationDTO> pageQuery(EorganizationDTO organizationRequest2DTO) {
+        return eorganizationManager.pageQuery(organizationRequest2DTO);
+
+    }
+
+
 }

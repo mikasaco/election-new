@@ -5,6 +5,7 @@ import com.mou.election.EUserManager;
 import com.mou.election.annotation.PassToken;
 import com.mou.election.convert.RequestConvert;
 import com.mou.election.convert.ResponseConvert;
+import com.mou.election.enums.LoginTypeEnum;
 import com.mou.election.model.EPageResult;
 import com.mou.election.model.EResult;
 import com.mou.election.model.EUserDTO;
@@ -33,7 +34,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/user/")
 @Slf4j
-public class EuserController {
+public class EUserController {
 
     @Autowired
     private EuserService euserService;
@@ -45,19 +46,21 @@ public class EuserController {
     @PassToken
     public EResult<EUserLoginVO> login(@RequestBody EUserReqeust request) {
         EUserDTO userDTO = RequestConvert.userRequest2DTO(request);
+
         EUserDTO euserDTO = euserService.login(userDTO);
         String token = TokenUtils.getToken(euserDTO.getId());
         EUserLoginVO loginVO = new EUserLoginVO();
         loginVO.setToken(token);
         loginVO.setUserVO(ResponseConvert.userDTO2VO(userDTO));
-        euserManager.putUserDTO(token,euserDTO);
+        euserManager.putUserDTO(token, euserDTO);
         return EResult.newSuccessInstance(loginVO);
     }
 
     @RequestMapping("bindOpenId/{jsCode}")
     public EResult<Boolean> bindOpenId(HttpServletRequest httpServletRequest, @PathVariable String jsCode) {
         EUserDTO userDTO = euserManager.getUserDTO(httpServletRequest);
-        euserService.bindOpenId(jsCode,userDTO);
+        EUserDTO eUserDTO = euserService.bindOpenId(jsCode, userDTO);
+        euserService.update(eUserDTO);
         return EResult.newSuccessInstance(Boolean.TRUE);
     }
 
@@ -87,7 +90,7 @@ public class EuserController {
     public EPageResult<List<EUserVO>> pageQuery(@RequestBody EUserReqeust request) {
         PageInfo<EUserDTO> pageInfo = euserService.pageQuery(RequestConvert.userRequest2DTO(request));
         List<EUserVO> eroleVOS = pageInfo.getList().stream().map(ResponseConvert::userDTO2VO).collect(Collectors.toList());
-        return EPageResult.newSuccessInstance(pageInfo.getTotal(),eroleVOS);
+        return EPageResult.newSuccessInstance(pageInfo.getTotal(), eroleVOS);
     }
 
 }
