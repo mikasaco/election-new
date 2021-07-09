@@ -1,0 +1,27 @@
+package com.mou.election.model.vo;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
+import java.util.Date;
+
+@Getter
+@Setter
+@ToString
+public class EuserMessageVO {
+
+    private String messageId;
+
+    private String userAttr;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date createTime;
+
+    private Integer readStatus;
+
+    private Integer messageReplyStatus;
+
+    private Integer popupStatus;
+
+}

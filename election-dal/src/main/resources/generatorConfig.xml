@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE generatorConfiguration
+        PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"
+        "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">
+
+<generatorConfiguration>
+    <properties resource="./generatorConfig.properties" />
+
+    <context id="election" targetRuntime="MyBatis3">
+
+        <!-- 配置数据库连接 -->
+        <jdbcConnection driverClass="${jdbc.driverClass}"
+                        connectionURL="${jdbc.url}" userId="${jdbc.user}" password="${jdbc.password}">
+        </jdbcConnection>
+
+        <!-- 生成文件位置 -->
+        <javaModelGenerator targetPackage="${doSubPackage}"
+                            targetProject="${basePath}/main/java">
+            <property name="enableSubPackages" value="true" />
+            <property name="trimStrings" value="true" />
+        </javaModelGenerator>
+        <sqlMapGenerator targetPackage="${mapperSubPackage}"
+                         targetProject="${basePath}/main/resources">
+            <property name="enableSubPackages" value="true" />
+        </sqlMapGenerator>
+        <javaClientGenerator type="XMLMAPPER"
+                             targetPackage="${mapperSubPackage}" targetProject="${basePath}/main/java">
+            <property name="enableSubPackages" value="true" />
+        </javaClientGenerator>
+
+
+        <!--<table tableName="e_user" domainObjectName="EuserDO"></table>
+        <table tableName="e_data_dictionary" domainObjectName="EdataDictionaryDO"></table>
+        <table tableName="e_message_type" domainObjectName="EmessageTypeDO"> </table>-->
+        <table tableName="e_user_message" domainObjectName="EuserMessageDO"></table>
+        <table tableName="e_message" domainObjectName="EmessageDO"></table>
+        <table tableName="e_role" domainObjectName="EroleDO"/>
+        <table tableName="e_apply" domainObjectName="EApplyDO"/>
+<!--        <table tableName="e_permission" domainObjectName="EpermissionDO"/>-->
+
+
+    </context>
+</generatorConfiguration>
