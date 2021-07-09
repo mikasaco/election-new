@@ -1,7 +1,6 @@
 package com.mou.election.model.request;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -24,7 +23,6 @@ public class EUserReqeust extends BaseRequest implements Serializable {
     private static final long serialVersionUID = 3721219084320732000L;
 
     private Long id;
-    @ApiModelProperty(value = "创建时间", name = "gmtCreate")
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date gmtCreate;
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
