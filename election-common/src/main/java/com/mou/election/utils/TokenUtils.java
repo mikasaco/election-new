@@ -4,10 +4,10 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
-import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.mou.election.enums.ErrorCodeEnum;
 import com.mou.election.exception.EbizException;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -20,6 +20,7 @@ import java.util.Map;
  * @author 沈林强(四笠)
  * @date 2021/7/3
  */
+@Slf4j
 public class TokenUtils {
 
     public static final String SECRET = "2384jd8fjie2fvr";
@@ -52,16 +53,38 @@ public class TokenUtils {
         return token;
     }
 
-    public static Long verify(String token){
+    /**
+     * 校验token 是否合法
+     * @param token
+     * @return
+     */
+    public static boolean verify(String token,String userId) {
         try {
-            JWTVerifier jwtVerifier=JWT.require(Algorithm.HMAC256(SECRET)).withIssuer("Service").build();//创建token验证器
-            DecodedJWT decodedJWT=jwtVerifier.verify(token);
-            Claim claim = decodedJWT.getClaim("user_id");
-            return Long.valueOf(claim.asString());
-
-
+            JWTVerifier jwtVerifier=JWT.require(Algorithm.HMAC256(SECRET))
+                    .withClaim("iss","Service")
+                    .withClaim("aud", "APP")
+                    .withClaim("user_id",userId).build();//创建token验证器
+            jwtVerifier.verify(token);
+            log.info("token is valid");
+            return true;
         } catch (IllegalArgumentException | JWTVerificationException e) {
-            throw new EbizException(ErrorCodeEnum.PARAM_ERROR);
+            log.error("token is invalid{}", e.getMessage());
+            return false;
         }
+    }
+
+    /**
+     *获取用户Id
+     * @param token
+     * @return
+     */
+    public static Long getUserIdByToken(String token){
+         /*if(verify(token,null)) {
+             DecodedJWT jwt = JWT.decode(token);
+             return jwt.getClaim("user_id").asLong();
+         }
+         throw new EbizException(ErrorCodeEnum.PARAM_ERROR);*/
+        DecodedJWT jwt = JWT.decode(token);
+        return jwt.getClaim("user_id").asLong();
     }
 }

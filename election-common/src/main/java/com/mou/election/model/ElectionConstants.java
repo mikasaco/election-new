@@ -31,10 +31,10 @@ public class ElectionConstants {
     public static final Integer POPUP_STATUS_N = 1;
     //消息回执状态
     public static final Integer REPLY_STATUS_Y = 0;
-    public static final Integer READ_STATUS_N=1;
     public static final Integer REPLY_STATUS_N = 1;
-
-
+    //消息已读状态
+    public static final Integer READ_STATUS_Y = 0;
+    public static final Integer READ_STATUS_N = 1;
     /**
      * 选举时间状态
      * 0： 9-6个月内

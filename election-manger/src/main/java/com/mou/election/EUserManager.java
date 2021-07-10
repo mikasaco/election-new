@@ -119,8 +119,13 @@ public class EUserManager {
         return euserDOS.stream().map(EuserConvert::do2dto).collect(Collectors.toList());
     }
 
+<<<<<<< HEAD
     public EUserDTO getUserByToken(String token) {
         Long userId = TokenUtils.verify(token);
+=======
+    public EUserDTO getUserByToken(String token){
+        Long userId = TokenUtils.getUserIdByToken(token);
+>>>>>>> 05c6dc6acac6093b392b9ad1b5499cbc772ba88b
         EuserDO euserDO = euserDOMapper.selectByPrimaryKey(userId);
         if (euserDO == null) {
             return null;
