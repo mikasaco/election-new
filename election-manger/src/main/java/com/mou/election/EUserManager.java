@@ -125,7 +125,7 @@ public class EUserManager {
     }
 
     public EUserDTO getUserByToken(String token){
-        Long userId = TokenUtils.verify(token);
+        Long userId = TokenUtils.getUserIdByToken(token);
         EuserDO euserDO = euserDOMapper.selectByPrimaryKey(userId);
         if(euserDO == null){
             return null;
