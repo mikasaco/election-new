@@ -151,7 +151,8 @@ public class EuserServiceImpl implements EuserService {
     }
 
     private void queryPermissionHandle(HttpServletRequest httpServletRequest, EUserDTO queryDTO){
-        Long userId = TokenUtils.verify(httpServletRequest.getHeader("token"));
+        Long userId = TokenUtils.getUserIdByToken(httpServletRequest.getHeader("token"));
+//        TokenUtils.verify(httpServletRequest.getHeader("token"),userId.toString());
         EUserDTO userDTO = getUserById(userId);
         Boolean  isAdmin = false;
         if (!CollectionUtils.isEmpty(userDTO.getPermissionDTOS())){

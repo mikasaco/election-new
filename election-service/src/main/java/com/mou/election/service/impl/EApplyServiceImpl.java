@@ -69,7 +69,7 @@ public class EApplyServiceImpl implements EApplyService {
 
     @Override
     public PageInfo<EApplyDTO> pageQuery(HttpServletRequest httpServletRequest, EApplyDTO applyRequest2DTO) {
-        Long userId = TokenUtils.verify(httpServletRequest.getHeader("token"));
+        Long userId = TokenUtils.getUserIdByToken(httpServletRequest.getHeader("token"));
         EUserDTO userDTO = userManager.getUserById(userId);
         Boolean isAdmin = false;
         if (!CollectionUtils.isEmpty(userDTO.getPermissionDTOS())){

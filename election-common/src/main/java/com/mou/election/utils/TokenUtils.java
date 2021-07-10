@@ -85,6 +85,6 @@ public class TokenUtils {
          }
          throw new EbizException(ErrorCodeEnum.PARAM_ERROR);*/
         DecodedJWT jwt = JWT.decode(token);
-        return jwt.getClaim("user_id").asLong();
+        return Long.valueOf(jwt.getClaim("user_id").asString());
     }
 }
