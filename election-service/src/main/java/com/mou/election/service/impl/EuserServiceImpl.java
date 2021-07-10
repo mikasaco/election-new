@@ -1,22 +1,29 @@
 package com.mou.election.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.auth0.jwt.JWT;
 import com.github.pagehelper.PageInfo;
 import com.github.pagehelper.util.StringUtil;
+import com.mou.election.EorganizationManager;
 import com.mou.election.EroleManager;
 import com.mou.election.EUserManager;
 import com.mou.election.constants.EConstants;
 import com.mou.election.enums.ErrorCodeEnum;
 import com.mou.election.enums.LoginTypeEnum;
 import com.mou.election.exception.EbizException;
+import com.mou.election.model.EPermissionDTO;
+import com.mou.election.model.EorganizationDTO;
 import com.mou.election.model.EroleDTO;
 import com.mou.election.model.EUserDTO;
 import com.mou.election.service.EuserService;
 import com.mou.election.utils.HttpClientUtils;
+import com.mou.election.utils.TokenUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.swing.text.StyledEditorKit;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +42,9 @@ public class EuserServiceImpl implements EuserService {
 
     @Autowired
     private EroleManager eroleManager;
+
+    @Autowired
+    private EorganizationManager eorganizationManager;
 
     private static Map<String, EUserDTO> map = new HashMap<>();
 
@@ -88,7 +98,9 @@ public class EuserServiceImpl implements EuserService {
     @Override
     public EUserDTO getUserById(Long id) {
         EUserDTO euserDTO = userManager.getUserById(id);
+        this.convertPermissionAndRole(euserDTO);
         return euserDTO;
+
     }
 
     @Override
@@ -104,7 +116,7 @@ public class EuserServiceImpl implements EuserService {
         return euserDTO;
     }
 
-    private String getOpenId(String jsCode){
+    private String getOpenId(String jsCode) {
         Map<String, String> params = new HashMap<>(4);
         params.put("appid", EConstants.WEIXIN_APP_ID);
         params.put("secret", EConstants.WEIXIN_SECRET);
@@ -129,59 +141,68 @@ public class EuserServiceImpl implements EuserService {
     }
 
     @Override
-    public List<EUserDTO> query(EUserDTO queryDTO) {
+    public List<EUserDTO> query(HttpServletRequest httpServletRequest, EUserDTO queryDTO) {
+        queryPermissionHandle(httpServletRequest,queryDTO);
+
         List<EUserDTO> userDTOS = userManager.query(queryDTO);
-        userDTOS.forEach(dto -> {
-            if (StringUtil.isNotEmpty(dto.getFeature())) {
-                Map<String, Object> map = JSONObject.parseObject(dto.getFeature(), Map.class);
-                List<String> roleCodes = JSONObject.parseArray((String) map.get(EConstants.ROLE), String.class);
-                if (CollectionUtils.isEmpty(roleCodes)) {
-                    return;
-                }
-                roleCodes.forEach(roleCode -> {
-                    EroleDTO eroleDTO = eroleManager.getByCode(roleCode);
-                    if (eroleDTO == null) {
-                        return;
-                    }
-                    dto.putRoleDTO(eroleDTO);
-                    if (CollectionUtils.isEmpty(eroleDTO.getPermissionDTOList())) {
-                        return;
-                    }
-                    eroleDTO.getPermissionDTOList().forEach(permissionDTO -> {
-                        dto.putpermissionDTO(permissionDTO);
-                    });
-                });
-            }
-        });
+        userDTOS.forEach(this::convertPermissionAndRole);
+
         return userDTOS;
     }
 
+    private void queryPermissionHandle(HttpServletRequest httpServletRequest, EUserDTO queryDTO){
+        Long userId = TokenUtils.verify(httpServletRequest.getHeader("token"));
+        EUserDTO userDTO = getUserById(userId);
+        Boolean  isAdmin = false;
+        if (!CollectionUtils.isEmpty(userDTO.getPermissionDTOS())){
+            for(EPermissionDTO permissionDTO:userDTO.getPermissionDTOS()){
+                if("query_all_user".equalsIgnoreCase(permissionDTO.getPermissionCode())){
+                    isAdmin = true;
+                }
+            }
+        }
+        if (!isAdmin){
+            queryDTO.setOrganizationId(userDTO.getOrganizationId());
+        }
+
+    }
+
     @Override
-    public PageInfo<EUserDTO> pageQuery(EUserDTO queryDTO){
+    public PageInfo<EUserDTO> pageQuery(HttpServletRequest httpServletRequest,EUserDTO queryDTO) {
+        queryPermissionHandle(httpServletRequest,queryDTO);
         PageInfo<EUserDTO> pageInfo = userManager.pageQuery(queryDTO);
 
-        pageInfo.getList().forEach(dto -> {
-            if (StringUtil.isNotEmpty(dto.getFeature())) {
-                Map<String, Object> map = JSONObject.parseObject(dto.getFeature(), Map.class);
-                List<String> roleCodes = JSONObject.parseArray((String) map.get(EConstants.ROLE), String.class);
-                if (CollectionUtils.isEmpty(roleCodes)) {
+        pageInfo.getList().forEach(this::convertPermissionAndRole);
+        return pageInfo;
+    }
+
+    public void convertPermissionAndRole(EUserDTO dto) {
+        if(null != dto.getOrganizationId()){
+            EorganizationDTO eorganizationDTO = eorganizationManager.getById(dto.getOrganizationId());
+            if(null != eorganizationDTO){
+                dto.setOrganization(eorganizationDTO.getOrganizationName());
+            }
+        }
+
+        if (StringUtil.isNotEmpty(dto.getFeature())) {
+            Map<String, Object> map = JSONObject.parseObject(dto.getFeature(), Map.class);
+            List<String> roleCodes = JSONObject.parseArray((String) map.get(EConstants.ROLE), String.class);
+            if (CollectionUtils.isEmpty(roleCodes)) {
+                return;
+            }
+            roleCodes.forEach(roleCode -> {
+                EroleDTO eroleDTO = eroleManager.getByCode(roleCode);
+                if (eroleDTO == null) {
                     return;
                 }
-                roleCodes.forEach(roleCode -> {
-                    EroleDTO eroleDTO = eroleManager.getByCode(roleCode);
-                    if (eroleDTO == null) {
-                        return;
-                    }
-                    dto.putRoleDTO(eroleDTO);
-                    if (CollectionUtils.isEmpty(eroleDTO.getPermissionDTOList())) {
-                        return;
-                    }
-                    eroleDTO.getPermissionDTOList().forEach(permissionDTO -> {
-                        dto.putpermissionDTO(permissionDTO);
-                    });
+                dto.putRoleDTO(eroleDTO);
+                if (CollectionUtils.isEmpty(eroleDTO.getPermissionDTOList())) {
+                    return;
+                }
+                eroleDTO.getPermissionDTOList().forEach(permissionDTO -> {
+                    dto.putpermissionDTO(permissionDTO);
                 });
-            }
-        });
-        return pageInfo;
+            });
+        }
     }
 }

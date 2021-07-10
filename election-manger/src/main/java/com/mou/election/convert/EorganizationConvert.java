@@ -19,6 +19,9 @@ public class EorganizationConvert {
     }
 
     public static EorganizationDTO do2dto(EorganizationDO eorganizationDO){
+        if (eorganizationDO == null){
+            return null;
+        }
         EorganizationDTO eorganizationDTO = new EorganizationDTO();
         BeanUtils.copyProperties(eorganizationDO,eorganizationDTO);
         return eorganizationDTO;

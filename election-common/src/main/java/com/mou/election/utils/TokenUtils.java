@@ -4,6 +4,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.interfaces.Claim;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.mou.election.enums.ErrorCodeEnum;
 import com.mou.election.exception.EbizException;
@@ -55,7 +56,9 @@ public class TokenUtils {
         try {
             JWTVerifier jwtVerifier=JWT.require(Algorithm.HMAC256(SECRET)).withIssuer("Service").build();//创建token验证器
             DecodedJWT decodedJWT=jwtVerifier.verify(token);
-            return decodedJWT.getClaim("userId").asLong();
+            Claim claim = decodedJWT.getClaim("user_id");
+            return Long.valueOf(claim.asString());
+
 
         } catch (IllegalArgumentException | JWTVerificationException e) {
             throw new EbizException(ErrorCodeEnum.PARAM_ERROR);

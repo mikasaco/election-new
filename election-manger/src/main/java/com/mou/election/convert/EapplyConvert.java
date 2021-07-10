@@ -2,6 +2,7 @@ package com.mou.election.convert;
 
 import com.mou.election.dal.domian.EApplyDO;
 import com.mou.election.enums.ApplyDelayEnum;
+import com.mou.election.enums.ApplyStatusEnum;
 import com.mou.election.model.EApplyDTO;
 import org.springframework.beans.BeanUtils;
 
@@ -17,6 +18,7 @@ public class EapplyConvert {
         EApplyDO applyDO = new EApplyDO();
         BeanUtils.copyProperties(dto, applyDO);
         applyDO.setDelay(dto.getDelay().getCode());
+        applyDO.setStatus(dto.getStatus().getCode());
         return applyDO;
     }
 
@@ -24,6 +26,7 @@ public class EapplyConvert {
         EApplyDTO dto = new EApplyDTO();
         BeanUtils.copyProperties(applyDO, dto);
         dto.setDelay(ApplyDelayEnum.getApplyDelayByCode(applyDO.getDelay()));
+        dto.setStatus(ApplyStatusEnum.getApplyStatusByCode(applyDO.getStatus()));
         return dto;
     }
 }

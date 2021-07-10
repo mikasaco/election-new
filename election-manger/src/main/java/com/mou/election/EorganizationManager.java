@@ -53,6 +53,9 @@ public class EorganizationManager {
 
     public EorganizationDTO getById(Long id) {
         EorganizationDO eorganizationDO = eorganizationDOMapper.selectByPrimaryKey(id);
+        if (eorganizationDO == null){
+            return null;
+        }
         return EorganizationConvert.do2dto(eorganizationDO);
     }
 

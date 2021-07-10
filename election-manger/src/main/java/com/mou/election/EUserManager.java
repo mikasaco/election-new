@@ -41,16 +41,11 @@ public class EUserManager {
     @Autowired
     private EuserDOMapper euserDOMapper;
 
-    private Map<String, EUserDTO> tokenUserMap = new HashMap<>();
-
 
     public EUserDTO getUserDTO(HttpServletRequest request) {
         String token = request.getHeader("token");
-        return tokenUserMap.get(token);
-    }
-
-    public void putUserDTO(String token, EUserDTO euserDTO) {
-        tokenUserMap.put(token, euserDTO);
+        Long userId = TokenUtils.verify(token);
+        return this.getUserById(userId);
     }
 
     public EUserDTO getUserById(Long id) {
@@ -61,7 +56,7 @@ public class EUserManager {
         EuserDO euserDO = EuserConvert.dto2do(addDTO);
         euserDO.setGmtCreate(new Date());
         euserDO.setGmtModified(new Date());
-        if(StringUtil.isEmpty(euserDO.getPassword())) {
+        if (StringUtil.isEmpty(euserDO.getPassword())) {
             euserDO.setPassword(euserDO.getPhone());
         }
         euserDOMapper.insert(euserDO);
@@ -115,7 +110,7 @@ public class EUserManager {
             criteria.andOrganizationIdEqualTo(queryDTO.getOrganizationId());
         }
         if (StringUtil.isNotEmpty(queryDTO.getPost())) {
-            criteria.andPostEqualTo(queryDTO.getPost());
+            criteria.andPostLike("%" + queryDTO.getPost() + "%");
         }
         if (StringUtil.isNotEmpty(queryDTO.getStatus())) {
             criteria.andStatusEqualTo(queryDTO.getStatus());
@@ -124,10 +119,10 @@ public class EUserManager {
         return euserDOS.stream().map(EuserConvert::do2dto).collect(Collectors.toList());
     }
 
-    public EUserDTO getUserByToken(String token){
+    public EUserDTO getUserByToken(String token) {
         Long userId = TokenUtils.verify(token);
         EuserDO euserDO = euserDOMapper.selectByPrimaryKey(userId);
-        if(euserDO == null){
+        if (euserDO == null) {
             return null;
         }
         return EuserConvert.do2dto(euserDO);
@@ -135,8 +130,8 @@ public class EUserManager {
 
     public PageInfo<EUserDTO> pageQuery(EUserDTO queryDTO) {
         EuserDOExample example = buildExample(queryDTO);
-        Page<EuserDO> page = PageHelper.startPage(queryDTO.getCurrentPageNo(),queryDTO.getPageSize())
-                .doSelectPage(()->euserDOMapper.selectByExample(example));
+        Page<EuserDO> page = PageHelper.startPage(queryDTO.getCurrentPageNo(), queryDTO.getPageSize())
+                .doSelectPage(() -> euserDOMapper.selectByExample(example));
         List<EUserDTO> collect = page.getResult().stream().map(EuserConvert::do2dto).collect(Collectors.toList());
         PageInfo pageInfo = new PageInfo();
         pageInfo.setTotal(page.getTotal());
@@ -147,7 +142,7 @@ public class EUserManager {
     private EuserDOExample buildExample(EUserDTO queryDTO) {
         EuserDOExample example = new EuserDOExample();
         EuserDOExample.Criteria criteria = example.createCriteria();
-        if (queryDTO.getPost() != null){
+        if (queryDTO.getPost() != null) {
             criteria.andPostEqualTo(queryDTO.getPost());
         }
         return example;

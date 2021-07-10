@@ -3,6 +3,7 @@ package com.mou.election.service;
 import com.github.pagehelper.PageInfo;
 import com.mou.election.model.EUserDTO;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -29,7 +30,7 @@ public interface EuserService {
 
     EUserDTO getUserByOpenId(String openId);
 
-    List<EUserDTO> query(EUserDTO queryDTO);
+    List<EUserDTO> query(HttpServletRequest httpServletRequest, EUserDTO queryDTO);
 
-    PageInfo<EUserDTO> pageQuery(EUserDTO queryDTO);
+    PageInfo<EUserDTO> pageQuery(HttpServletRequest httpServletRequest,EUserDTO queryDTO);
 }

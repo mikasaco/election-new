@@ -69,6 +69,10 @@ public class ResponseConvert {
     public static EApplyVO applyDTO2VO(EApplyDTO dto) {
         EApplyVO vo = new EApplyVO();
         BeanUtils.copyProperties(dto, vo);
+        vo.setStatus(dto.getStatus().getCode());
+        vo.setDelay(dto.getDelay().getCode());
+        vo.setStatusDesc(dto.getStatus().getDesc());
+        vo.setDelayDesc(dto.getDelay().getDesc());
         return vo;
     }
 

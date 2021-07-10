@@ -52,7 +52,6 @@ public class EUserController {
         EUserLoginVO loginVO = new EUserLoginVO();
         loginVO.setToken(token);
         loginVO.setUserVO(ResponseConvert.userDTO2VO(userDTO));
-        euserManager.putUserDTO(token, euserDTO);
         return EResult.newSuccessInstance(loginVO);
     }
 
@@ -71,10 +70,17 @@ public class EUserController {
         return EResult.newSuccessInstance(Boolean.TRUE);
     }
 
-    @RequestMapping("query")
-    public EResult<List<EUserVO>> query(@RequestBody EUserReqeust request) {
+    @RequestMapping("update")
+    public EResult<Boolean> update(@RequestBody EUserReqeust request) {
         EUserDTO userDTO = RequestConvert.userRequest2DTO(request);
-        List<EUserDTO> userDTOS = euserService.query(userDTO);
+        euserService.update(userDTO);
+        return EResult.newSuccessInstance(Boolean.TRUE);
+    }
+
+    @RequestMapping("query")
+    public EResult<List<EUserVO>> query(HttpServletRequest httpServletRequest,@RequestBody EUserReqeust request) {
+        EUserDTO userDTO = RequestConvert.userRequest2DTO(request);
+        List<EUserDTO> userDTOS = euserService.query(httpServletRequest,userDTO);
         List<EUserVO> euserVOS = userDTOS.stream().map(ResponseConvert::userDTO2VO).collect(Collectors.toList());
         return EResult.newSuccessInstance(euserVOS);
     }
@@ -85,10 +91,16 @@ public class EUserController {
         return EResult.newSuccessInstance(ResponseConvert.userDTO2VO(userDTO));
     }
 
+    @RequestMapping("delete/{id}")
+    public EResult<Boolean> delete(@PathVariable Long id) {
+        euserService.delete(id);
+        return EResult.newSuccessInstance(Boolean.TRUE);
+    }
+
 
     @RequestMapping("pageQuery")
-    public EPageResult<List<EUserVO>> pageQuery(@RequestBody EUserReqeust request) {
-        PageInfo<EUserDTO> pageInfo = euserService.pageQuery(RequestConvert.userRequest2DTO(request));
+    public EPageResult<List<EUserVO>> pageQuery(HttpServletRequest httpServletRequest,@RequestBody EUserReqeust request) {
+        PageInfo<EUserDTO> pageInfo = euserService.pageQuery(httpServletRequest,RequestConvert.userRequest2DTO(request));
         List<EUserVO> eroleVOS = pageInfo.getList().stream().map(ResponseConvert::userDTO2VO).collect(Collectors.toList());
         return EPageResult.newSuccessInstance(pageInfo.getTotal(), eroleVOS);
     }

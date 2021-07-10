@@ -47,7 +47,7 @@ public enum PermissionEnum {
     public static PermissionEnum getPermissionByCode(String code) {
         PermissionEnum[] values = PermissionEnum.values();
         for (PermissionEnum value : values) {
-            if(value.code == code){
+            if (value.code.equalsIgnoreCase(code)) {
                 return value;
             }
         }

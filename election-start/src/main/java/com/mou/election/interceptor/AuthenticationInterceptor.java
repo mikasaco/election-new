@@ -69,9 +69,6 @@ public class AuthenticationInterceptor implements HandlerInterceptor {
             throw new EbizException(ErrorCodeEnum.TOKEN_NOT_EXIST);
         }
         return true;
-//            }
-//        }
-//        return true;
     }
 
 

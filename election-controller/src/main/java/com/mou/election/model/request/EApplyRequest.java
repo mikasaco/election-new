@@ -5,6 +5,7 @@ import lombok.Setter;
 import lombok.ToString;
 
 import java.util.Date;
+import java.util.List;
 
 @Getter
 @Setter
@@ -33,5 +34,9 @@ public class EApplyRequest extends BaseRequest {
 
 
     private String status;
+
+    private Long organizationId;
+
+    private List<Long> userIds;
 
 }

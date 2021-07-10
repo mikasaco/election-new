@@ -45,6 +45,8 @@ public class EUserDTO extends BaseDTO implements Serializable {
 
     private Long organizationId;
 
+    private String organization;
+
     private String post;
 
     private String status;

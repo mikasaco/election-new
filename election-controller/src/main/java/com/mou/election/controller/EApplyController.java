@@ -1,12 +1,16 @@
 package com.mou.election.controller;
 
+import com.github.pagehelper.PageInfo;
 import com.mou.election.EUserManager;
 import com.mou.election.convert.RequestConvert;
 import com.mou.election.convert.ResponseConvert;
+import com.mou.election.enums.ApplyStatusEnum;
 import com.mou.election.model.EApplyDTO;
+import com.mou.election.model.EPageResult;
 import com.mou.election.model.EResult;
 import com.mou.election.model.EUserDTO;
 import com.mou.election.model.request.EApplyRequest;
+import com.mou.election.model.vo.ApplyTotalVO;
 import com.mou.election.model.vo.EApplyVO;
 import com.mou.election.service.EApplyService;
 import lombok.extern.slf4j.Slf4j;
@@ -64,10 +68,35 @@ public class EApplyController {
         return EResult.newSuccessInstance(vos);
     }
 
-//    @RequestMapping("pageQuery")
-//    public EPageResult<List<EorganizationVO>> pageQuery(@RequestBody EApplyRequest request){
-//        PageInfo<EorganizationDTO> result = applyService.pageQuery(RequestConvert.organizationRequest2DTO(request));
-//        List<EorganizationVO> permissionVOS = result.getList().stream().map(ResponseConvert::organizationDTO2VO).collect(Collectors.toList());
-//        return EPageResult.newSuccessInstance(result.getTotal(),permissionVOS);
-//    }
+    @RequestMapping("pageQuery")
+    public EPageResult<EApplyVO> pageQuery(HttpServletRequest httpServletRequest,@RequestBody EApplyRequest request){
+        PageInfo<EApplyDTO> result = applyService.pageQuery(httpServletRequest,RequestConvert.applyRequest2DTO(request));
+        List<EApplyVO> permissionVOS = result.getList().stream().map(ResponseConvert::applyDTO2VO).collect(Collectors.toList());
+        return EPageResult.newSuccessInstance(result.getTotal(),permissionVOS);
+    }
+
+    @RequestMapping("count")
+    public EResult<ApplyTotalVO> count(HttpServletRequest httpServletRequest, @RequestBody EApplyRequest request){
+        ApplyTotalVO applyTotalVO = new ApplyTotalVO();
+        EApplyDTO applyDTO = RequestConvert.applyRequest2DTO(request);
+
+
+        Integer totalCount = applyService.count(applyDTO);
+        applyTotalVO.setTotalApplyNum(totalCount);
+
+        applyDTO.setStatus(ApplyStatusEnum.PROCESSING);
+        Integer processingCount = applyService.count(applyDTO);
+
+        applyDTO.setStatus(ApplyStatusEnum.PASS);
+        Integer passCount = applyService.count(applyDTO);
+
+        applyDTO.setStatus(ApplyStatusEnum.REJECTED);
+        Integer rejectedCount = applyService.count(applyDTO);
+
+        applyTotalVO.setTotalApplyNum(totalCount);
+        applyTotalVO.setProcessingApplyNum(processingCount);
+        applyTotalVO.setFinishApplyNum(passCount+rejectedCount);
+
+        return EResult.newSuccessInstance(applyTotalVO);
+    }
 }

@@ -2,11 +2,12 @@ package com.mou.election.enums;
 
 import com.mou.election.exception.EbizException;
 
-public enum ApplyDelayEnum {
+public enum ApplyStatusEnum {
+    PROCESSING("PROCESSING", "审核中"),
 
-    PUNCTUAL("PUNCTUAL","如期"),
+    PASS("PASS", "通过"),
 
-    DELAY("DELAY","延期");
+    REJECTED("REJECTED", "拒绝");
 
 
     private String code;
@@ -29,14 +30,14 @@ public enum ApplyDelayEnum {
         this.desc = desc;
     }
 
-    ApplyDelayEnum(String code, String desc) {
+    ApplyStatusEnum(String code, String desc) {
         this.code = code;
         this.desc = desc;
     }
 
-    public static ApplyDelayEnum getApplyDelayByCode(String code) {
-        ApplyDelayEnum[] values = ApplyDelayEnum.values();
-        for (ApplyDelayEnum value : values) {
+    public static ApplyStatusEnum getApplyStatusByCode(String code) {
+        ApplyStatusEnum[] values = ApplyStatusEnum.values();
+        for (ApplyStatusEnum value : values) {
             if (value.code.equalsIgnoreCase(code)) {
                 return value;
             }

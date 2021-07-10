@@ -38,6 +38,8 @@ public class EUserVO {
 
     private String organization;
 
+    private Long organizationId;
+
     private String post;
 
     private String status;

@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.ImmutableMap;
 import com.mou.election.constants.EConstants;
 import com.mou.election.enums.ApplyDelayEnum;
+import com.mou.election.enums.ApplyStatusEnum;
 import com.mou.election.enums.LoginTypeEnum;
 import com.mou.election.model.*;
 import com.mou.election.model.request.*;
@@ -26,7 +27,7 @@ public class RequestConvert {
     public static EdataDictionaryDTO dataDictionaryRequest2DTO(EdataDictionaryRequest request) {
         EdataDictionaryDTO dataDictionaryDTO = new EdataDictionaryDTO();
         BeanUtils.copyProperties(request, dataDictionaryDTO);
-        if(request.getFeatureKey() != null && !CollectionUtils.isEmpty(request.getFeatureValue())){
+        if (request.getFeatureKey() != null && !CollectionUtils.isEmpty(request.getFeatureValue())) {
             String valueStr = JSONObject.toJSONString(request.getFeatureValue());
             Map<String, String> map = ImmutableMap.of(request.getFeatureKey(), valueStr);
             request.setDataFeature(JSONObject.toJSONString(map));
@@ -42,7 +43,7 @@ public class RequestConvert {
         }
         if (!CollectionUtils.isEmpty(request.getRoleCodes())) {
             Map<String, String> roleMap = new HashMap<>();
-            roleMap.put(EConstants.ROLE,JSONObject.toJSONString(request.getRoleCodes()));
+            roleMap.put(EConstants.ROLE, JSONObject.toJSONString(request.getRoleCodes()));
             euserDTO.setFeature(JSONObject.toJSONString(roleMap));
         }
         return euserDTO;
@@ -71,7 +72,7 @@ public class RequestConvert {
         BeanUtils.copyProperties(request, dto);
         if (!CollectionUtils.isEmpty(request.getPermissionCodes())) {
             Map<String, String> permissionMap = new HashMap<>();
-            permissionMap.put(EConstants.PERMISSION,JSONObject.toJSONString(request.getPermissionCodes()));
+            permissionMap.put(EConstants.PERMISSION, JSONObject.toJSONString(request.getPermissionCodes()));
             dto.setFeature(JSONObject.toJSONString(permissionMap));
         }
         return dto;
@@ -86,7 +87,14 @@ public class RequestConvert {
     public static EApplyDTO applyRequest2DTO(EApplyRequest request) {
         EApplyDTO applyDTO = new EApplyDTO();
         BeanUtils.copyProperties(request, applyDTO);
-        applyDTO.setDelay(ApplyDelayEnum.getApplyDelayByCode(request.getDelay()));
+        if (request.getDelay() != null) {
+            applyDTO.setDelay(ApplyDelayEnum.getApplyDelayByCode(request.getDelay()));
+
+        }
+        if (request.getStatus() != null) {
+            applyDTO.setStatus(ApplyStatusEnum.getApplyStatusByCode(request.getStatus()));
+
+        }
         return applyDTO;
     }
 
