@@ -86,6 +86,7 @@ public class EApplyManager {
             List<Long> userIds = userDTOS.stream().map(EUserDTO::getId).collect(Collectors.toList());
             criteria.andUserIdIn(userIds);
         }
+
         return example;
     }
 

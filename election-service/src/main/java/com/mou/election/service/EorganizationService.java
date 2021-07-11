@@ -22,4 +22,6 @@ public interface EorganizationService {
     void delete(Long id);
 
     PageInfo<EorganizationDTO> pageQuery(EorganizationDTO organizationRequest2DTO);
+
+    Integer count(EorganizationDTO eorganizationDTO);
 }

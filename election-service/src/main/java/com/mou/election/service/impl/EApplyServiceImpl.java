@@ -12,6 +12,7 @@ import com.mou.election.model.EPermissionDTO;
 import com.mou.election.model.EUserDTO;
 import com.mou.election.model.EroleDTO;
 import com.mou.election.service.EApplyService;
+import com.mou.election.service.EuserService;
 import com.mou.election.utils.TokenUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +29,7 @@ public class EApplyServiceImpl implements EApplyService {
     private EApplyManager applyManager;
 
     @Autowired
-    private EUserManager userManager;
+    private EuserService euserService;
 
 
     @Override
@@ -56,7 +57,7 @@ public class EApplyServiceImpl implements EApplyService {
     @Override
     public EApplyDTO get(Long id) {
         EApplyDTO applyDTO = applyManager.get(id);
-        EUserDTO userDTO = userManager.getUserById(applyDTO.getUserId());
+        EUserDTO userDTO = euserService.getUserById(applyDTO.getUserId());
         applyDTO.setUserDTO(userDTO);
         return applyDTO;
     }
@@ -70,22 +71,28 @@ public class EApplyServiceImpl implements EApplyService {
     @Override
     public PageInfo<EApplyDTO> pageQuery(HttpServletRequest httpServletRequest, EApplyDTO applyRequest2DTO) {
         Long userId = TokenUtils.getUserIdByToken(httpServletRequest.getHeader("token"));
-        EUserDTO userDTO = userManager.getUserById(userId);
+        EUserDTO userDTO = euserService.getUserById(userId);
         Boolean isAdmin = false;
-        if (!CollectionUtils.isEmpty(userDTO.getPermissionDTOS())){
-            for(EPermissionDTO permissionDTO:userDTO.getPermissionDTOS()){
-                if("query_all_user".equalsIgnoreCase(permissionDTO.getPermissionCode())){
+        if (!CollectionUtils.isEmpty(userDTO.getPermissionDTOS())) {
+            for (EPermissionDTO permissionDTO : userDTO.getPermissionDTOS()) {
+                if ("query_all_user".equalsIgnoreCase(permissionDTO.getPermissionCode())) {
                     isAdmin = true;
                 }
             }
         }
-        if (!isAdmin){
+        if (!isAdmin) {
             applyRequest2DTO.setUserId(userId);
         }
-        return applyManager.pageQuery(applyRequest2DTO);
+        PageInfo<EApplyDTO> pageInfo = applyManager.pageQuery(applyRequest2DTO);
+        if (!CollectionUtils.isEmpty(pageInfo.getList())) {
+            pageInfo.getList().forEach(applyDTO -> {
+                applyDTO.setUserDTO(euserService.getUserById(applyDTO.getUserId()));
+            });
+        }
+        return pageInfo;
     }
 
-    public Integer count(EApplyDTO applyDTO){
+    public Integer count(EApplyDTO applyDTO) {
         return applyManager.count(applyDTO);
     }
 

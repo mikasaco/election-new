@@ -1,5 +1,6 @@
 package com.mou.election.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.auth0.jwt.JWT;
 import com.github.pagehelper.PageInfo;
@@ -18,6 +19,7 @@ import com.mou.election.model.EUserDTO;
 import com.mou.election.service.EuserService;
 import com.mou.election.utils.HttpClientUtils;
 import com.mou.election.utils.TokenUtils;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -35,6 +37,7 @@ import java.util.Map;
  * @date 2021/7/3
  */
 @Service
+@Slf4j
 public class EuserServiceImpl implements EuserService {
 
     @Autowired
@@ -53,7 +56,7 @@ public class EuserServiceImpl implements EuserService {
         EUserDTO euserDTO = null;
         if (LoginTypeEnum.OPENID.equals(userDTO.getLoginTypeEnum())) {
             if (StringUtil.isEmpty(userDTO.getJsCode())) {
-                throw new EbizException(ErrorCodeEnum.WEIXIN_NOT_BIND);
+                throw new EbizException(ErrorCodeEnum.PARAM_ERROR);
             }
             String openId = getOpenId(userDTO.getJsCode());
             euserDTO = userManager.getUserByOpenId(openId);
@@ -73,6 +76,7 @@ public class EuserServiceImpl implements EuserService {
                 throw new EbizException(ErrorCodeEnum.PASSWORD_NOT_CORRECT);
             }
         }
+        this.convertPermissionAndRole(euserDTO);
         return euserDTO;
     }
 
@@ -122,11 +126,17 @@ public class EuserServiceImpl implements EuserService {
         params.put("secret", EConstants.WEIXIN_SECRET);
         params.put("js_code", jsCode);
         params.put("grant_type", EConstants.GRANT_TYPE);
-        String openId = HttpClientUtils.doGet(EConstants.URL, params);
-        if (StringUtil.isNotEmpty(openId)) {
+        String httpResult = HttpClientUtils.doGet(EConstants.URL, params);
+        try {
+            if (StringUtil.isNotEmpty(httpResult)) {
+                Map map = JSON.parseObject(httpResult, Map.class);
+                return (String) map.get("openid");
+            }
+        } catch (Exception e) {
             throw new EbizException(ErrorCodeEnum.TOKEN_OPEN_ID_FAILED);
         }
-        return openId;
+        return null;
+
     }
 
 
@@ -142,7 +152,7 @@ public class EuserServiceImpl implements EuserService {
 
     @Override
     public List<EUserDTO> query(HttpServletRequest httpServletRequest, EUserDTO queryDTO) {
-        queryPermissionHandle(httpServletRequest,queryDTO);
+        queryPermissionHandle(httpServletRequest, queryDTO);
 
         List<EUserDTO> userDTOS = userManager.query(queryDTO);
         userDTOS.forEach(this::convertPermissionAndRole);
@@ -150,27 +160,27 @@ public class EuserServiceImpl implements EuserService {
         return userDTOS;
     }
 
-    private void queryPermissionHandle(HttpServletRequest httpServletRequest, EUserDTO queryDTO){
+    private void queryPermissionHandle(HttpServletRequest httpServletRequest, EUserDTO queryDTO) {
         Long userId = TokenUtils.getUserIdByToken(httpServletRequest.getHeader("token"));
 //        TokenUtils.verify(httpServletRequest.getHeader("token"),userId.toString());
         EUserDTO userDTO = getUserById(userId);
-        Boolean  isAdmin = false;
-        if (!CollectionUtils.isEmpty(userDTO.getPermissionDTOS())){
-            for(EPermissionDTO permissionDTO:userDTO.getPermissionDTOS()){
-                if("query_all_user".equalsIgnoreCase(permissionDTO.getPermissionCode())){
+        Boolean isAdmin = false;
+        if (!CollectionUtils.isEmpty(userDTO.getPermissionDTOS())) {
+            for (EPermissionDTO permissionDTO : userDTO.getPermissionDTOS()) {
+                if ("query_all_user".equalsIgnoreCase(permissionDTO.getPermissionCode())) {
                     isAdmin = true;
                 }
             }
         }
-        if (!isAdmin){
+        if (!isAdmin) {
             queryDTO.setOrganizationId(userDTO.getOrganizationId());
         }
 
     }
 
     @Override
-    public PageInfo<EUserDTO> pageQuery(HttpServletRequest httpServletRequest,EUserDTO queryDTO) {
-        queryPermissionHandle(httpServletRequest,queryDTO);
+    public PageInfo<EUserDTO> pageQuery(HttpServletRequest httpServletRequest, EUserDTO queryDTO) {
+        queryPermissionHandle(httpServletRequest, queryDTO);
         PageInfo<EUserDTO> pageInfo = userManager.pageQuery(queryDTO);
 
         pageInfo.getList().forEach(this::convertPermissionAndRole);
@@ -178,9 +188,9 @@ public class EuserServiceImpl implements EuserService {
     }
 
     public void convertPermissionAndRole(EUserDTO dto) {
-        if(null != dto.getOrganizationId()){
+        if (null != dto.getOrganizationId()) {
             EorganizationDTO eorganizationDTO = eorganizationManager.getById(dto.getOrganizationId());
-            if(null != eorganizationDTO){
+            if (null != eorganizationDTO) {
                 dto.setOrganization(eorganizationDTO.getOrganizationName());
             }
         }
@@ -205,5 +215,10 @@ public class EuserServiceImpl implements EuserService {
                 });
             });
         }
+    }
+
+    @Override
+    public Integer count() {
+        return userManager.count(new EUserDTO());
     }
 }

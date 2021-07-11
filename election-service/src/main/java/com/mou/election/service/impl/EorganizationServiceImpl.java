@@ -47,5 +47,12 @@ public class EorganizationServiceImpl implements EorganizationService {
 
     }
 
+    @Override
+    public Integer count(EorganizationDTO eorganizationDTO) {
+        return eorganizationManager.count(eorganizationDTO);
+    }
+
+
+
 
 }

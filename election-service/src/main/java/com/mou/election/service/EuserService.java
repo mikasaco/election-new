@@ -33,4 +33,6 @@ public interface EuserService {
     List<EUserDTO> query(HttpServletRequest httpServletRequest, EUserDTO queryDTO);
 
     PageInfo<EUserDTO> pageQuery(HttpServletRequest httpServletRequest,EUserDTO queryDTO);
+
+    Integer count();
 }

@@ -1,5 +1,6 @@
 package com.mou.election.utils;
 
+import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -51,6 +52,7 @@ public class HttpClientUtils {
 
             // 执行请求
             response = httpclient.execute(httpGet);
+            log.info("query weixin open_id result:{}", JSONObject.toJSONString(response));
             // 判断返回状态是否为200
             if (response.getStatusLine().getStatusCode() == 200) {
                 resultString = EntityUtils.toString(response.getEntity(), "UTF-8");

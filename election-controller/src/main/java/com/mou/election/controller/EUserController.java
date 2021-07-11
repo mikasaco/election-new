@@ -51,7 +51,7 @@ public class EUserController {
         String token = TokenUtils.getToken(euserDTO.getId());
         EUserLoginVO loginVO = new EUserLoginVO();
         loginVO.setToken(token);
-        loginVO.setUserVO(ResponseConvert.userDTO2VO(userDTO));
+        loginVO.setUserVO(ResponseConvert.userDTO2VO(euserDTO));
         return EResult.newSuccessInstance(loginVO);
     }
 

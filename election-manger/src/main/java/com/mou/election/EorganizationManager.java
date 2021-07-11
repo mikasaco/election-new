@@ -89,4 +89,9 @@ public class EorganizationManager {
         }
         return example;
     }
+
+    public Integer count(EorganizationDTO eorganizationDTO){
+        EorganizationDOExample eorganizationDOExample = buildExample(eorganizationDTO);
+        return eorganizationDOMapper.countByExample(eorganizationDOExample);
+    }
 }

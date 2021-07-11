@@ -1,5 +1,6 @@
 package com.mou.election.model.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -27,7 +28,7 @@ public class EApplyVO {
 
     private String statusDesc;
 
-
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date applyElectionDate;
 
 

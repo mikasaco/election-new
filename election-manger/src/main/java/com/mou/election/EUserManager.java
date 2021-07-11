@@ -89,7 +89,7 @@ public class EUserManager {
 
     public EUserDTO getUserByOpenId(String openId) {
         EuserDOExample example = new EuserDOExample();
-        example.createCriteria().andPhoneEqualTo(openId);
+        example.createCriteria().andOpenIdEqualTo(openId);
         List<EuserDO> euserDOS = euserDOMapper.selectByExample(example);
         if (CollectionUtils.isEmpty(euserDOS)) {
             return null;
@@ -147,7 +147,9 @@ public class EUserManager {
             criteria.andPostEqualTo(queryDTO.getPost());
         }
         return example;
+    }
 
-
+    public Integer count(EUserDTO userDTO){
+        return euserDOMapper.countByExample(buildExample(userDTO));
     }
 }
