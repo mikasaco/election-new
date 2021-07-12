@@ -211,6 +211,9 @@ public class EuserServiceImpl implements EuserService {
                     return;
                 }
                 eroleDTO.getPermissionDTOList().forEach(permissionDTO -> {
+                    if(permissionDTO.getPermissionCode().equalsIgnoreCase("query_all_user")){
+                        dto.setAdmin(true);
+                    }
                     dto.putpermissionDTO(permissionDTO);
                 });
             });

@@ -59,6 +59,10 @@ public class EUserDTO extends BaseDTO implements Serializable {
 
     private String jsCode;
 
+    private Boolean admin = false;
+
+
+
 
     public void putRoleDTO(EroleDTO roleDTO) {
         if (this.roleDTOS == null) {

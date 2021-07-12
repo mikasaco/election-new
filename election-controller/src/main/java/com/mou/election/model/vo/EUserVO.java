@@ -50,5 +50,7 @@ public class EUserVO {
 
     private List<EPermissionVO> permissionVOS;
 
+    private Boolean admin;
+
 
 }
