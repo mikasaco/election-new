@@ -1,5 +1,6 @@
 package com.mou.election.model.request;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -24,7 +25,7 @@ public class EApplyRequest extends BaseRequest {
 
     private String delay;
 
-
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date applyElectionDate;
 
 

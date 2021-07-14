@@ -38,8 +38,8 @@ public class EmessageServiceImpl implements EmessageService {
         messageDO.setLastUpdateTime(new Date());
         messageDO.setUuid(uuid);
         messageDO.setType(2);
+        messageDO.setIsChangeTerm(StringUtil.isEmpty(messageDO.getIsChangeTerm())?"N":messageDO.getIsChangeTerm());
         messageDO.setStatus(ElectionConstants.MESSAGE_STATUS_Y);
-        messageDO.setIsChangeTerm(ElectionConstants.IS_CHANGE_TERM_N);
         //插入消息表
         emessageDOMapper.insert(messageDO);
         //插入用户消息表
@@ -47,11 +47,10 @@ public class EmessageServiceImpl implements EmessageService {
             EuserMessageDO euserMessageDO = new EuserMessageDO();
             euserMessageDO.setUserAttr(str);
             euserMessageDO.setMessageId(uuid);
-            euserMessageDO.setIsReceipt(messageDO.getIsReceipt());
             euserMessageDO.setMessageReplyStatus(ElectionConstants.REPLY_STATUS_N);
-//            euserMessageDO.setReadStatus(ElectionConstants.READ_STATUS_N);
+            euserMessageDO.setIsReceipt(messageDO.getIsReceipt());
             euserMessageDO.setPopupStatus(ElectionConstants.POPUP_STATUS_N);
-            euserMessageDO.setIsChangeTerm(messageDO.getIsChangeTerm());
+            euserMessageDO.setIsChangeTerm(StringUtil.isEmpty(messageDO.getIsChangeTerm())?"N":messageDO.getIsChangeTerm());
             euserMessageDO.setCreateTime(new Date());
             euserMessageDO.setLastUpdateTime(new Date());
             euserMessageDOMapper.insert(euserMessageDO);
@@ -104,7 +103,13 @@ public class EmessageServiceImpl implements EmessageService {
                 page.setPageSize(ElectionConstants.PAGE_DEFAULT_SIZE);
             }
             if(StringUtil.isNotEmpty(page.getKeyWord())){
-
+                criteria.andHeadLike(page.getKeyWord());
+                EmessageDOExample.Criteria criteriaDesct = emessageDOExample.or();
+                criteriaDesct.andStatusEqualTo(ElectionConstants.MESSAGE_STATUS_Y);
+                criteriaDesct.andDesctLike(page.getKeyWord());
+                EmessageDOExample.Criteria criteriaDetail = emessageDOExample.or();
+                criteriaDetail.andStatusEqualTo(ElectionConstants.MESSAGE_STATUS_Y);
+                criteriaDetail.andDetailsLike(page.getKeyWord());
             }
             Page<EmessageDO> pageInfo = PageHelper.startPage(page.getCurrentPageNo(),page.getPageSize(),"create_time desc")
                     .doSelectPage(()->emessageDOMapper.selectByExample(emessageDOExample));
@@ -159,6 +164,9 @@ public class EmessageServiceImpl implements EmessageService {
         userMessageResponse.put("ctMessageTotal",pageInfoCT.getTotal());
         userMessageResponse.put("ctMessageList",CollectionUtils.isEmpty(pageInfoCT.getResult()) ? Collections.EMPTY_LIST :
                 pageInfoCT.getResult().stream().map(EmessageConvert::do2dto).collect(Collectors.toList()));
+        userMessageResponse.put("ctMessageNotRead",CollectionUtils.isEmpty(pageInfoCT.getResult()) ? Collections.EMPTY_LIST :
+                pageInfoCT.getResult().stream().filter(userMessage->
+                        !ElectionConstants.READ_STATUS_Y.equals(userMessage.getReadStatus())).collect(Collectors.toList()).size());
         userMessageResponse.put("notReadTotal",notReadTotal);
         userMessageResponse.put("noticeTotal",pageInfoNotice.getTotal());
         userMessageResponse.put("noticeMessageList",CollectionUtils.isEmpty(pageInfoNotice.getResult()) ? Collections.EMPTY_LIST :

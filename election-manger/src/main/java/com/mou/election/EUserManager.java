@@ -149,6 +149,20 @@ public class EUserManager {
         return example;
     }
 
+    public EUserDTO getUserByOrgId(Long orgId) {
+        EuserDOExample example = new EuserDOExample();
+        example.createCriteria().andOrganizationIdEqualTo(orgId);
+        List<EuserDO> euserDOS = euserDOMapper.selectByExample(example);
+        if (CollectionUtils.isEmpty(euserDOS)) {
+            return null;
+        }
+        if (euserDOS.size() > 1) {
+            log.error("openId = {} query DB has more then 1 user", orgId);
+            throw new EbizException(ErrorCodeEnum.SYSTEM_ERROR);
+        }
+        return EuserConvert.do2dto(euserDOS.get(0));
+    }
+
     public Integer count(EUserDTO userDTO){
         return euserDOMapper.countByExample(buildExample(userDTO));
     }

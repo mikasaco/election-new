@@ -17,7 +17,10 @@ import com.mou.election.utils.TokenUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -78,24 +81,27 @@ public class MessageController {
      */
     @PostMapping(value="notice",
             produces = "application/json;charset=utf-8")
-    public EResult reply (@RequestBody EuserMessageRequest request, String token) {
+    public EResult reply (@RequestBody EuserMessageRequest userMessageRequest) {
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        String token = request.getHeader("token");
         EUserDTO euserDTO = euserManager.getUserByToken(token);
         if(euserDTO == null){
             return EResult.newErrorInstance(ErrorCodeEnum.USER_NOT_EXIST);
         }
-        request.setUserAttr(euserDTO.getPhone());
-        EuserMessageDTO euserMessageDTO = RequestConvert.userMessageRequest2DTO(request);
+        userMessageRequest.setUserAttr(euserDTO.getPhone());
+        EuserMessageDTO euserMessageDTO = RequestConvert.userMessageRequest2DTO(userMessageRequest);
         return emessageService.reply(euserMessageDTO);
     }
 
     /**
      * 客户端获取消息
-     * @param token
      * @return
      */
     @GetMapping(value = "notice",
             produces = "application/json;charset=utf-8")
-    public EResult replyRead(String token,EPageResult page) {
+    public EResult replyRead(EPageResult page) {
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        String token = request.getHeader("token");
         if(token == null){
             return EResult.newErrorInstance(ErrorCodeEnum.PARAM_ERROR);
         }
@@ -105,7 +111,7 @@ public class MessageController {
         }
         Map<String,Object> responseMap = emessageService.replyRead(euserDTO.getPhone(),page);
         List<EuserMessageJoinDTO> ctMessageList = (List<EuserMessageJoinDTO>) responseMap.get("ctMessageList");
-        List<EuserMessageJoinDTO> noticeMessageList = (List<EuserMessageJoinDTO>) responseMap.get("ctMessageList");
+        List<EuserMessageJoinDTO> noticeMessageList = (List<EuserMessageJoinDTO>) responseMap.get("noticeMessageList");
         responseMap.put("ctMessageList", CollectionUtils.isEmpty(ctMessageList) ? Collections.EMPTY_LIST :
                 ctMessageList.stream().map(ResponseConvert::messageDTO2VO).collect(Collectors.toList()));
         responseMap.put("noticeMessageList", CollectionUtils.isEmpty(noticeMessageList) ? Collections.EMPTY_LIST :
@@ -132,18 +138,29 @@ public class MessageController {
     }
 
     private Set<String> parsePushUsers(String pushUsers){
+        Set<String> userSet = new HashSet<>();
         String[] strParse = pushUsers.split("\\|");
         if(!StringUtil.isEmpty(strParse[0])) {
             List<EUserDTO> user = euserManager.query(null);
             if(user != null &&  user.size()>0) {
                 return user.stream().map(EUserDTO::getPhone).collect(Collectors.toSet());
             }
-        }else if(!StringUtil.isEmpty(strParse[1])) {
-            //TODO 根据部门推送
-        }else if(!StringUtil.isEmpty(strParse[2])){
-            return Arrays.asList(strParse[2].split(",")).stream().collect(Collectors.toSet());
         }
-        return null;
+
+        if(!StringUtil.isEmpty(strParse[1])) {
+            String orgIds[] = strParse[1].split(",");
+            Arrays.stream(orgIds).forEach(orgId -> {
+                EUserDTO user = euserManager.getUserByOrgId(Long.valueOf(orgId));
+                userSet.add(user.getPhone());
+            });
+         }
+        if(!StringUtil.isEmpty(strParse[2])){
+            String phones[] = strParse[2].split(",");
+            Arrays.stream(phones).forEach(phone -> {
+                userSet.add(phone);
+            });
+        }
+        return userSet;
     }
 
 }

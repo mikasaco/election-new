@@ -41,6 +41,7 @@ public class EApplyServiceImpl implements EApplyService {
         if (!CollectionUtils.isEmpty(applyDTOS)) {
             throw new EbizException(ErrorCodeEnum.PROCESSIONG_APPLY_EXIST);
         }
+        applyDTO.setStatus(ApplyStatusEnum.PROCESSING);
         applyManager.add(applyDTO);
     }
 

@@ -12,10 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletResponse;
@@ -31,7 +28,7 @@ import java.util.stream.IntStream;
 
 /**
  * 测试Excel模板导入导出（easyExcel）
- *
+ * https://github.com/alibaba/easyexcel
  */
 @Slf4j
 @Controller
@@ -43,12 +40,13 @@ public class TestController {
     private String message;
 
 
-    @PostMapping("template")
+    @GetMapping("template")
     public void generateImportTemplate(HttpServletResponse response) throws IOException {
         response.setContentType("application/vnd.ms-excel");
         response.setCharacterEncoding("utf-8");
         String fileName = URLEncoder.encode("测试", "UTF-8").replaceAll("\\+", "%20");
         response.setHeader("Content-disposition", "attachment;filename*=utf-8''" + fileName + ".xlsx");
+        response.setHeader("content-type","application/x-msdownload");
         EasyExcel.write(response.getOutputStream(), EdataDictionaryVO.class).sheet("模板").doWrite(data());
     }
 
@@ -68,10 +66,6 @@ public class TestController {
             final List<EdataDictionaryVO> data = Lists.newArrayList();
             final List<Map<String, Object>> error = Lists.newArrayList();
             EasyExcel.read(file.getInputStream(), EdataDictionaryVO.class, new UploadDataListener(edataDictionaryManager)).sheet().doRead();
-            if (!data.isEmpty()) {
-                // 将合法的记录批量入库
-                //this.testService.batchInsert(data);
-            }
             long time = ((System.currentTimeMillis() - beginTimeMillis));
             ImmutableMap<String, Object> result = ImmutableMap.of(
                     "time", time,
@@ -82,7 +76,7 @@ public class TestController {
         }catch (Exception e) {
             message = "导入Excel数据失败," + e.getMessage();
             log.error(message);
-            //throw new EbizException(message);
+            throw new EbizException("Excel_ERROR","导入Excel数据失败");
         }
     }
 

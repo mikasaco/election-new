@@ -27,7 +27,7 @@ public class TokenUtils {
 
     public static final int calendarField = Calendar.MINUTE;
 
-    public static final int calendarInterval = 10;
+    public static final int calendarInterval = 30;
 
     public static String getToken(Long userId) {
         Date iatDate = new Date();

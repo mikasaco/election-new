@@ -1,7 +1,14 @@
 package com.mou.election.service.impl;
 
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.mou.election.EdataDictionaryManager;
+import com.mou.election.dal.domian.EdataDictionaryDO;
+import com.mou.election.dal.domian.EmessageDO;
+import com.mou.election.model.EPageResult;
 import com.mou.election.model.EdataDictionaryDTO;
+import com.mou.election.model.EmessageDTO;
 import com.mou.election.service.EdataDictionaryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,8 +34,8 @@ public class EdataDictionaryServiceImpl implements EdataDictionaryService {
     }
 
     @Override
-    public List<EdataDictionaryDTO> query(EdataDictionaryDTO edataDictionaryDTO) {
-        return dataDictionaryManager.query(edataDictionaryDTO);
+    public PageInfo<EdataDictionaryDTO> query(EPageResult page) {
+        return dataDictionaryManager.query(page);
     }
 
     @Override

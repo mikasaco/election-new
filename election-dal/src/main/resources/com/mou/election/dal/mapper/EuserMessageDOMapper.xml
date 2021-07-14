@@ -315,6 +315,9 @@
       <if test="record.popupStatus != null">
         popup_status = #{record.popupStatus,jdbcType=INTEGER},
       </if>
+      <if test="record.readStatus != null">
+        read_status = #{record.readStatus,jdbcType=INTEGER},
+      </if>
       <if test="record.createTime != null">
         create_time = #{record.createTime,jdbcType=TIMESTAMP},
       </if>

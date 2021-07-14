@@ -1,15 +1,20 @@
 package com.mou.election;
 
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.mou.election.convert.EdataDictionaryConvert;
 import com.mou.election.dal.domian.EdataDictionaryDO;
-import com.mou.election.dal.domian.EdataDictionaryDOExample;
 import com.mou.election.dal.mapper.EdataDictionaryDOMapper;
+import com.mou.election.model.EPageResult;
 import com.mou.election.model.EdataDictionaryDTO;
+import com.mou.election.model.ElectionConstants;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import java.util.Date;
-import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Created by 沈林强(四笠) on 2021/7/3.
@@ -31,12 +36,25 @@ public class EdataDictionaryManager {
         edataDictionaryDOMapper.insert(dictionaryDO);
     }
 
-    public List<EdataDictionaryDTO> query(EdataDictionaryDTO edataDictionaryDTO) {
-        EdataDictionaryDOExample example = new EdataDictionaryDOExample();
-        example.createCriteria().andDataCodeEqualTo(edataDictionaryDTO.getDataCode());
+    public PageInfo<EdataDictionaryDTO> query(EPageResult pageResult) {
+        if(pageResult.getCurrentPageNo() == null) {
+            pageResult.setCurrentPageNo(ElectionConstants.PAGE_DEFAULT_INDEX);
+        }
+        if(pageResult.getPageSize() == null) {
+            pageResult.setPageSize(ElectionConstants.PAGE_DEFAULT_SIZE);
+        }
+        Page<EdataDictionaryDO> pages = PageHelper.startPage(pageResult.getCurrentPageNo(),pageResult.getPageSize(),"gmt_create desc")
+                .doSelectPage(()->edataDictionaryDOMapper.selectByExample(null));
 
-        List<EdataDictionaryDO> edataDictionaryDOS = edataDictionaryDOMapper.selectByExample(example);
-        return EdataDictionaryConvert.doList2Dto(edataDictionaryDOS);
+        PageInfo<EdataDictionaryDTO> pageInfo = new PageInfo();
+        pageInfo.setTotal(pages.getTotal());
+        if(CollectionUtils.isEmpty(pages.getResult())){
+            pageInfo.setList(null);
+        }else{
+            pageInfo.setList(pages.getResult().stream()
+                    .map(EdataDictionaryConvert::do2dto).collect(Collectors.toList()));
+        }
+        return pageInfo;
     }
 
     public void update(EdataDictionaryDTO dto){

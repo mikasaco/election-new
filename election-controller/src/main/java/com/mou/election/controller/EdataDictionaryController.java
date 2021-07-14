@@ -1,11 +1,13 @@
 package com.mou.election.controller;
 
+import com.github.pagehelper.PageInfo;
 import com.mou.election.EdataDictionaryManager;
 import com.mou.election.annotation.UserLoginToken;
 import com.mou.election.convert.RequestConvert;
 import com.mou.election.convert.ResponseConvert;
 import com.mou.election.enums.ErrorCodeEnum;
 import com.mou.election.exception.EbizException;
+import com.mou.election.model.EPageResult;
 import com.mou.election.model.EResult;
 import com.mou.election.model.EdataDictionaryDTO;
 import com.mou.election.model.request.EdataDictionaryRequest;
@@ -18,7 +20,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -42,11 +46,12 @@ public class EdataDictionaryController {
     }
 
     @RequestMapping("query")
-    public EResult<List<EdataDictionaryVO>> query(@RequestBody EdataDictionaryRequest dictionaryRequest) {
-
-        List<EdataDictionaryDTO> dictionaryDTOS = edataDictionaryService.query(RequestConvert.dataDictionaryRequest2DTO(dictionaryRequest));
-        List<EdataDictionaryVO> dictionaryVOS = dictionaryDTOS.stream().map(ResponseConvert::dataDictionaryDTO2VO).collect(Collectors.toList());
-        return EResult.newSuccessInstance(dictionaryVOS);
+    public EResult query(EPageResult page) {
+        PageInfo<EdataDictionaryDTO> pageInfo = edataDictionaryService.query(page);
+        Map<String,Object> mapResponse = new HashMap<>();
+        mapResponse.put("totals",pageInfo.getTotal());
+        mapResponse.put("dataDictList",pageInfo.getList());
+        return EResult.newSuccessInstance(mapResponse);
     }
 
     @RequestMapping("update")
