@@ -150,11 +150,13 @@ public class MessageController {
         if(!StringUtil.isEmpty(strParse[1])) {
             String orgIds[] = strParse[1].split(",");
             Arrays.stream(orgIds).forEach(orgId -> {
-                EUserDTO user = euserManager.getUserByOrgId(Long.valueOf(orgId));
-                userSet.add(user.getPhone());
+                List<EUserDTO> users = euserManager.getUserByOrgId(Long.valueOf(orgId));
+                if(!CollectionUtils.isEmpty(users)){
+                    users.stream().forEach(user-> userSet.add(user.getPhone()));
+                }
             });
          }
-        if(!StringUtil.isEmpty(strParse[2])){
+        if(strParse.length > 2 && !StringUtil.isEmpty(strParse[2])){
             String phones[] = strParse[2].split(",");
             Arrays.stream(phones).forEach(phone -> {
                 userSet.add(phone);
