@@ -6,13 +6,21 @@ import com.mou.election.constants.EConstants;
 import com.mou.election.enums.ApplyDelayEnum;
 import com.mou.election.enums.ApplyStatusEnum;
 import com.mou.election.enums.LoginTypeEnum;
+import com.mou.election.enums.QuestionTypeEnum;
 import com.mou.election.model.*;
 import com.mou.election.model.request.*;
+import com.mou.election.model.vo.AnswerVO;
+import com.mou.election.model.vo.ExamAnswerVO;
+import com.mou.election.model.vo.ExamVO;
+import com.mou.election.model.vo.QuestionVO;
 import org.springframework.beans.BeanUtils;
 import org.springframework.util.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Created by 沈林强(四笠) on 2021/7/3.
@@ -96,6 +104,67 @@ public class RequestConvert {
 
         }
         return applyDTO;
+    }
+
+    public static EExamDTO examRequest2DTO(ExamVO examVO) {
+        EExamDTO examDTO = new EExamDTO();
+        BeanUtils.copyProperties(examVO,examDTO);
+        examDTO.setTitle(examVO.getTitle());
+        examDTO.setRemark(examVO.getRemark());
+        if (examVO.getScore() == null) {
+            examDTO.setPassScore("100");
+        } else {
+            examDTO.setPassScore(examVO.getScore());
+        }
+        if (!CollectionUtils.isEmpty(examVO.getKsQuestionRequests())) {
+            List<EQuestionDTO> questionDTOS = examVO.getKsQuestionRequests().stream().
+                    map(RequestConvert::questionVO2DTO)
+                    .collect(Collectors.toList());
+            examDTO.setQuestionDTOS(questionDTOS);
+
+        }
+        return examDTO;
+    }
+
+
+    public static EQuestionDTO questionVO2DTO(QuestionVO questionVO) {
+        EQuestionDTO questionDTO = new EQuestionDTO();
+        questionDTO.setSort(questionVO.getSort());
+        questionDTO.setTitle(questionVO.getTitle());
+        questionDTO.setType(QuestionTypeEnum.getQuestionTypeByCode(questionVO.getType()));
+        if (null == questionVO.getScore()) {
+            questionDTO.setScore(10);
+        } else {
+            questionDTO.setScore(Integer.valueOf(questionVO.getScore()));
+        }
+        List<EAnswerDTO> answerDTOS = new ArrayList<>();
+        questionVO.getKsOptionsRequests().forEach(answerVO -> {
+            // 0不是正确答案，1是正确答案
+            if (questionVO.getAnswer().contains(answerVO.getArrange())) {
+                answerVO.setRight(1);
+            } else {
+                answerVO.setRight(0);
+            }
+            EAnswerDTO answerDTO = answerVO2DTO(answerVO);
+            answerDTOS.add(answerDTO);
+        });
+        questionDTO.setAnswerDTOS(answerDTOS);
+        return questionDTO;
+    }
+
+    public static EAnswerDTO answerVO2DTO(AnswerVO answerVO) {
+        EAnswerDTO answerDTO = new EAnswerDTO();
+        answerDTO.setArrange(answerVO.getArrange());
+        answerDTO.setChoice(answerVO.getChoice());
+        answerDTO.setRight(answerVO.getRight());
+        return answerDTO;
+    }
+
+    public static EExamAnswerDTO examAnswerVO2DTO(ExamAnswerVO examAnswerVO) {
+        EExamAnswerDTO examAnswerDTO = new EExamAnswerDTO();
+        BeanUtils.copyProperties(examAnswerVO, examAnswerDTO);
+
+        return examAnswerDTO;
     }
 
 }
