@@ -4,8 +4,11 @@ import com.alibaba.excel.EasyExcel;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.mou.election.EdataDictionaryManager;
+import com.mou.election.WxAppletsManager;
 import com.mou.election.excel.UploadDataListener;
 import com.mou.election.exception.EbizException;
+import com.mou.election.model.EResult;
+import com.mou.election.model.WxSendMessageDTO;
 import com.mou.election.model.vo.EdataDictionaryVO;
 import com.mou.election.service.EdataDictionaryService;
 import lombok.extern.slf4j.Slf4j;
@@ -31,11 +34,13 @@ import java.util.stream.IntStream;
  * https://github.com/alibaba/easyexcel
  */
 @Slf4j
-@Controller
+@RestController
 @RequestMapping("/test/")
 public class TestController {
     @Autowired
     private EdataDictionaryManager edataDictionaryManager;
+    @Autowired
+    private WxAppletsManager wxAppletsManager;
 
     private String message;
 
@@ -80,7 +85,24 @@ public class TestController {
         }
     }
 
+    @GetMapping(value = "getAccessToken",
+            produces = "application/json;charset=utf-8")
+    public String getAccessToken() {
+        return wxAppletsManager.getWxAccessToken();
+    }
 
+    @GetMapping(value = "getTemplate",
+            produces = "application/json;charset=utf-8")
+    public EResult getTemplate() {
+        return EResult.newSuccessInstance(wxAppletsManager.getTemplateList());
+    }
+
+
+    @PostMapping(value = "sendMessage",
+            produces = "application/json;charset=utf-8")
+    public EResult sendTemplateMessage(@RequestBody WxSendMessageDTO dto) {
+        return EResult.newSuccessInstance(wxAppletsManager.sendWxMessage(dto));
+    }
     private List<EdataDictionaryVO> data() {
         List<EdataDictionaryVO> list = new ArrayList();
         IntStream.range(0, 20).forEach(i -> {

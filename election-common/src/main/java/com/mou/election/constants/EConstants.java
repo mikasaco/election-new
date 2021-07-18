@@ -20,5 +20,9 @@ public class EConstants {
 
     public static final String URL = "https://api.weixin.qq.com/sns/jscode2session";
 
+    public static final String ACCESS_TOKEN = "https://api.weixin.qq.com/cgi-bin/token";
 
+    public static final String GET_TEMPLATE_LIST = "https://api.weixin.qq.com/wxaapi/newtmpl/gettemplate";
+
+    public static final String TEMPLATE_MESSAGE_SEND = "https://api.weixin.qq.com/cgi-bin/message/subscribe/send";
 }

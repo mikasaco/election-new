@@ -5,15 +5,18 @@ import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.mou.election.convert.EdataDictionaryConvert;
 import com.mou.election.dal.domian.EdataDictionaryDO;
+import com.mou.election.dal.domian.EdataDictionaryDOExample;
 import com.mou.election.dal.mapper.EdataDictionaryDOMapper;
 import com.mou.election.model.EPageResult;
 import com.mou.election.model.EdataDictionaryDTO;
 import com.mou.election.model.ElectionConstants;
+import com.mysql.cj.util.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import java.util.Date;
+import java.util.List;
 import java.util.stream.Collectors;
 
 /**
@@ -24,8 +27,6 @@ import java.util.stream.Collectors;
  */
 @Component
 public class EdataDictionaryManager {
-
-
     @Autowired
     private EdataDictionaryDOMapper edataDictionaryDOMapper;
 
@@ -34,6 +35,12 @@ public class EdataDictionaryManager {
         dictionaryDO.setGmtCreate(new Date());
         dictionaryDO.setGmtModified(new Date());
         edataDictionaryDOMapper.insert(dictionaryDO);
+    }
+
+    public void add(EdataDictionaryDO edataDictionaryDO) {
+        edataDictionaryDO.setGmtCreate(new Date());
+        edataDictionaryDO.setGmtModified(new Date());
+        edataDictionaryDOMapper.insert(edataDictionaryDO);
     }
 
     public PageInfo<EdataDictionaryDTO> query(EPageResult pageResult) {
@@ -63,8 +70,28 @@ public class EdataDictionaryManager {
         edataDictionaryDOMapper.updateByPrimaryKeySelective(dictionaryDO);
     }
 
+    public void updateByPrimaryKey(EdataDictionaryDO edataDictionaryDO) {
+        edataDictionaryDO.setGmtModified(new Date());
+        edataDictionaryDOMapper.updateByPrimaryKey(edataDictionaryDO);
+    }
+
     public void delete(Long id){
         edataDictionaryDOMapper.deleteByPrimaryKey(id);
+    }
+
+    public List<EdataDictionaryDO> queryByDataDict(EdataDictionaryDO edataDictionaryDO) {
+        EdataDictionaryDOExample edataDictionaryDOExample = new EdataDictionaryDOExample();
+        EdataDictionaryDOExample.Criteria criteria = edataDictionaryDOExample.createCriteria();
+        if(!StringUtils.isNullOrEmpty(edataDictionaryDO.getDataType())) {
+            criteria.andDataTypeEqualTo(edataDictionaryDO.getDataType());
+        }
+        if(!StringUtils.isNullOrEmpty(edataDictionaryDO.getDataCode())){
+            criteria.andDataCodeEqualTo(edataDictionaryDO.getDataCode());
+        }
+        if(!StringUtils.isNullOrEmpty(edataDictionaryDO.getDataDesc())){
+            criteria.andDataDescEqualTo(edataDictionaryDO.getDataDesc());
+        }
+        return edataDictionaryDOMapper.selectByExample(edataDictionaryDOExample);
     }
 
 }
