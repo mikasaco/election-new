@@ -11,6 +11,7 @@ import com.mou.election.model.EResult;
 import com.mou.election.model.WxSendMessageDTO;
 import com.mou.election.model.vo.EdataDictionaryVO;
 import com.mou.election.service.EdataDictionaryService;
+import com.mou.election.service.WxTemplateService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +42,8 @@ public class TestController {
     private EdataDictionaryManager edataDictionaryManager;
     @Autowired
     private WxAppletsManager wxAppletsManager;
+    @Autowired
+    private WxTemplateService wxTemplateService;
 
     private String message;
 
@@ -94,14 +97,14 @@ public class TestController {
     @GetMapping(value = "getTemplate",
             produces = "application/json;charset=utf-8")
     public EResult getTemplate() {
-        return EResult.newSuccessInstance(wxAppletsManager.getTemplateList());
+        return EResult.newSuccessInstance(wxTemplateService.getTemplateList());
     }
 
 
     @PostMapping(value = "sendMessage",
             produces = "application/json;charset=utf-8")
     public EResult sendTemplateMessage(@RequestBody WxSendMessageDTO dto) {
-        return EResult.newSuccessInstance(wxAppletsManager.sendWxMessage(dto));
+        return EResult.newSuccessInstance(wxTemplateService.sendWxMessage(dto));
     }
     private List<EdataDictionaryVO> data() {
         List<EdataDictionaryVO> list = new ArrayList();
