@@ -1,20 +1,16 @@
 package com.mou.election.service.impl;
 
-import com.auth0.jwt.JWT;
 import com.github.pagehelper.PageInfo;
 import com.mou.election.EApplyManager;
-import com.mou.election.EUserManager;
 import com.mou.election.enums.ApplyStatusEnum;
 import com.mou.election.enums.ErrorCodeEnum;
 import com.mou.election.exception.EbizException;
 import com.mou.election.model.EApplyDTO;
 import com.mou.election.model.EPermissionDTO;
 import com.mou.election.model.EUserDTO;
-import com.mou.election.model.EroleDTO;
 import com.mou.election.service.EApplyService;
 import com.mou.election.service.EuserService;
 import com.mou.election.utils.TokenUtils;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
@@ -37,7 +33,7 @@ public class EApplyServiceImpl implements EApplyService {
         EApplyDTO queryDTO = new EApplyDTO();
         queryDTO.setUserId(applyDTO.getUserId());
         queryDTO.setStatus(ApplyStatusEnum.PROCESSING);
-        List<EApplyDTO> applyDTOS = applyManager.query(applyDTO);
+        List<EApplyDTO> applyDTOS = applyManager.query(queryDTO);
         if (!CollectionUtils.isEmpty(applyDTOS)) {
             throw new EbizException(ErrorCodeEnum.PROCESSIONG_APPLY_EXIST);
         }

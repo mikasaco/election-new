@@ -13,6 +13,7 @@ import com.mou.election.model.request.EApplyRequest;
 import com.mou.election.model.vo.ApplyTotalVO;
 import com.mou.election.model.vo.EApplyVO;
 import com.mou.election.service.EApplyService;
+import com.mou.election.utils.TokenUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -37,8 +38,8 @@ public class EApplyController {
 
     @RequestMapping("add")
     public EResult<Boolean> add(HttpServletRequest httpServletRequest, @RequestBody EApplyRequest request){
-        EUserDTO userDTO = userManager.getUserDTO(httpServletRequest);
-        request.setUserId(userDTO.getId());
+        Long userId = TokenUtils.getUserIdByToken(httpServletRequest.getHeader("token"));
+        request.setUserId(userId);
         applyService.add(RequestConvert.applyRequest2DTO(request));
         return EResult.newSuccessInstance(Boolean.TRUE);
     }
