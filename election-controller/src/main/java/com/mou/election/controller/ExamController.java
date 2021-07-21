@@ -37,6 +37,19 @@ public class ExamController {
         return EResult.newSuccessInstance(true);
     }
 
+    @RequestMapping("update")
+    public EResult<Boolean> update(@RequestBody ExamVO examVO) {
+        EExamDTO examDTO = RequestConvert.examRequest2DTO(examVO);
+        examService.update(examDTO);
+        return EResult.newSuccessInstance(true);
+    }
+
+    @RequestMapping("delete/{id}")
+    public EResult<Boolean> delete(@PathVariable Long id){
+        examService.delete(id);
+        return EResult.newSuccessInstance(true);
+    }
+
     @RequestMapping("pageQuery")
     public EResult<ExamVO> pageQuery(@RequestBody ExamVO examVO) {
         EExamDTO examDTO = RequestConvert.examRequest2DTO(examVO);

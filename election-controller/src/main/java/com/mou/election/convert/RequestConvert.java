@@ -108,7 +108,7 @@ public class RequestConvert {
 
     public static EExamDTO examRequest2DTO(ExamVO examVO) {
         EExamDTO examDTO = new EExamDTO();
-        BeanUtils.copyProperties(examVO,examDTO);
+        BeanUtils.copyProperties(examVO, examDTO);
         examDTO.setTitle(examVO.getTitle());
         examDTO.setRemark(examVO.getRemark());
         if (examVO.getScore() == null) {
@@ -121,14 +121,15 @@ public class RequestConvert {
                     map(RequestConvert::questionVO2DTO)
                     .collect(Collectors.toList());
             examDTO.setQuestionDTOS(questionDTOS);
-
         }
+
         return examDTO;
     }
 
 
     public static EQuestionDTO questionVO2DTO(QuestionVO questionVO) {
         EQuestionDTO questionDTO = new EQuestionDTO();
+        BeanUtils.copyProperties(questionVO, questionDTO);
         questionDTO.setSort(questionVO.getSort());
         questionDTO.setTitle(questionVO.getTitle());
         questionDTO.setType(QuestionTypeEnum.getQuestionTypeByCode(questionVO.getType()));
@@ -154,6 +155,7 @@ public class RequestConvert {
 
     public static EAnswerDTO answerVO2DTO(AnswerVO answerVO) {
         EAnswerDTO answerDTO = new EAnswerDTO();
+        BeanUtils.copyProperties(answerVO, answerDTO);
         answerDTO.setArrange(answerVO.getArrange());
         answerDTO.setChoice(answerVO.getChoice());
         answerDTO.setRight(answerVO.getRight());

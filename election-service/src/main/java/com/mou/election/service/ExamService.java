@@ -23,4 +23,8 @@ public interface ExamService {
     Integer count(EExamAnswerDTO examAnswerDTO);
 
     List<EResultDTO> queryExamResult(EResultDTO resultDTO);
+
+    void update(EExamDTO examDTO);
+
+    void delete(Long id);
 }

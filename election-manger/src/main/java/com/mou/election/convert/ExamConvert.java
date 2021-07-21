@@ -1,8 +1,12 @@
 package com.mou.election.convert;
 
+import com.mou.election.dal.domian.EAnswerDO;
 import com.mou.election.dal.domian.EExamDO;
+import com.mou.election.dal.domian.EQuestionDO;
 import com.mou.election.dal.domian.EResultDO;
+import com.mou.election.model.EAnswerDTO;
 import com.mou.election.model.EExamDTO;
+import com.mou.election.model.EQuestionDTO;
 import com.mou.election.model.EResultDTO;
 import org.springframework.beans.BeanUtils;
 
@@ -27,6 +31,20 @@ public class ExamConvert {
         BeanUtils.copyProperties(examDO,examDTO);
         return examDTO;
 
+    }
+
+    public static EQuestionDO questionDTO2DO(EQuestionDTO questionDTO){
+        EQuestionDO questionDO = new EQuestionDO();
+        BeanUtils.copyProperties(questionDTO,questionDO);
+        questionDO.setType(questionDTO.getType().getCode());
+        return questionDO;
+    }
+
+    public static EAnswerDO answerDTO2DO(EAnswerDTO answerDTO){
+        EAnswerDO answerDO = new EAnswerDO();
+        BeanUtils.copyProperties(answerDTO,answerDO);
+        answerDO.setRightAnswer(answerDTO.getRight());
+        return answerDO;
     }
 
     public static EResultDTO resultDO2DTO(EResultDO resultDO){

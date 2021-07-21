@@ -3,10 +3,13 @@ package com.mou.election.service.impl;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.mou.election.convert.EapplyConvert;
 import com.mou.election.convert.ExamConvert;
 import com.mou.election.dal.domian.*;
 import com.mou.election.dal.mapper.*;
+import com.mou.election.enums.ErrorCodeEnum;
 import com.mou.election.enums.QuestionTypeEnum;
+import com.mou.election.exception.EbizException;
 import com.mou.election.model.*;
 import com.mou.election.service.ExamService;
 import com.mou.election.utils.TokenUtils;
@@ -253,4 +256,43 @@ public class ExamServiceImpl implements ExamService {
 
     }
 
+    @Override
+    public void update(EExamDTO examDTO) {
+        EExamDO examDO = ExamConvert.dto2do(examDTO);
+        examDO.setGmtModified(new Date());
+        examDOMapper.updateByPrimaryKey(examDO);
+
+        for (EQuestionDTO questionDTO : examDTO.getQuestionDTOS()) {
+            EQuestionDO questionDO = ExamConvert.questionDTO2DO(questionDTO);
+            questionDO.setGmtModified(new Date());
+            questionDOMapper.updateByPrimaryKey(questionDO);
+            List<EAnswerDTO> answerDTOS = questionDTO.getAnswerDTOS();
+            for (EAnswerDTO answerDTO : answerDTOS) {
+                EAnswerDO answerDO = ExamConvert.answerDTO2DO(answerDTO);
+                answerDO.setGmtModified(new Date());
+                answerDOMapper.updateByPrimaryKey(answerDO);
+            }
+        }
+    }
+
+    @Override
+    public void delete(Long id) {
+        EExamDO examDO = examDOMapper.selectByPrimaryKey(id);
+        if (examDO == null) {
+            throw new EbizException(ErrorCodeEnum.PARAM_ERROR);
+        }
+        examDOMapper.deleteByPrimaryKey(id);
+
+        EQuestionDOExample questionDOExample = new EQuestionDOExample();
+        questionDOExample.createCriteria().andExamIdEqualTo(examDO.getId());
+        List<EQuestionDO> questionDOS = questionDOMapper.selectByExample(questionDOExample);
+
+        for(EQuestionDO questionDO: questionDOS){
+            questionDOMapper.deleteByPrimaryKey(questionDO.getId());
+
+            EAnswerDOExample answerDOExample = new EAnswerDOExample();
+            answerDOExample.createCriteria().andQuestionIdEqualTo(questionDO.getId());
+            answerDOMapper.deleteByExample(answerDOExample);
+        }
+    }
 }

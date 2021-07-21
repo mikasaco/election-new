@@ -22,7 +22,5 @@ public class EExamDTO extends BaseDTO{
 
     private String feature;
 
-
-
     private List<EQuestionDTO> questionDTOS;
 }
