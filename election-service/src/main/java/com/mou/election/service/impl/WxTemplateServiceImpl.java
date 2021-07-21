@@ -50,9 +50,11 @@ public class WxTemplateServiceImpl implements WxTemplateService {
     public boolean sendWxMessage(WxSendMessageDTO wxSendMessageDTO) {
         String url = EConstants.TEMPLATE_MESSAGE_SEND+"?access_token=" + wxAppletsManager.getWxAccessToken();
         wxSendMessageDTO.getToUser().stream().forEach(user->{
-            String json = EStringUtils.spliceWxSendTemplate(user,wxSendMessageDTO.getTemplateId(),"index",wxSendMessageDTO.getData());
+            String json = EStringUtils.spliceWxSendTemplate(user,wxSendMessageDTO.getTemplateId(),"index",
+                    wxSendMessageDTO.getData(),wxSendMessageDTO.getMiniprogramState(),wxSendMessageDTO.getLang());
+            log.info("json---" + json);
             try {
-                HttpClientUtils.doPostJson(url, json);
+                log.info("消息推送wx返回----" + HttpClientUtils.doPostJson(url, json));
                 log.info("微信订阅消息template:"+wxSendMessageDTO.getTemplateId() + "---openId:" + user + "发送成功");
             } catch (Exception e) {
                 throw new EbizException("send_wx_template_error","发送微信订阅消息失败template:"+wxSendMessageDTO.getTemplateId() + "---openId:" + user );
