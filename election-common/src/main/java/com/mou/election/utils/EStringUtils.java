@@ -5,7 +5,8 @@ import java.util.Map;
 
 public class EStringUtils {
 
-    public static String spliceWxSendTemplate(String toUser,String templateId,String page,Map<String,String> map ) {
+    public static String spliceWxSendTemplate(String toUser,String templateId,String page,
+                                              Map<String,String> map,String miniprogramState,String lang ) {
         String dataValue = "";
         for(Map.Entry<String,String> entry : map.entrySet()){
             dataValue = dataValue + "\"" + entry.getKey() + "\"" + ": {" +
@@ -15,9 +16,12 @@ public class EStringUtils {
                 "\"" + "touser" + "\": " + "\"" + toUser + "\"," +
                 "\"" + "template_id" + "\": " + "\"" + templateId + "\"," +
                 "\"" + "page" + "\": " + "\"" + page + "\"," +
+                "\"" + "miniprogramState" + "\": " + "\"" + miniprogramState + "\"," +
+                "\"" + "lang" + "\": " + "\"" + lang + "\"," +
                 "\"" + "data" + "\":" +
                 "{" +
                 dataValue.substring(0,dataValue.length()-1) +
+                "}" +
                 "}";
     }
 
@@ -27,7 +31,7 @@ public class EStringUtils {
         map.put("amount01","￥100");
         map.put("thing01","广州至北京");
         map.put("date01","2018-01-01");
-        System.out.println(spliceWxSendTemplate("OPENID","TEMPLATE_ID","index",map));
+        //System.out.println(spliceWxSendTemplate("OPENID","TEMPLATE_ID","index",map));
     }
 
 }
