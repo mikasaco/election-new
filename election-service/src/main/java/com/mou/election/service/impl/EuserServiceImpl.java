@@ -117,6 +117,11 @@ public class EuserServiceImpl implements EuserService {
         }
         String openId = getOpenId(jsCode);
         euserDTO.setOpenId(openId);
+
+        EUserDTO userByOpenId = userManager.getUserByOpenId(openId);
+        if(userByOpenId != null){
+            throw new EbizException(ErrorCodeEnum.OPEN_ID_BIND_OTHER_USER);
+        }
         return euserDTO;
     }
 

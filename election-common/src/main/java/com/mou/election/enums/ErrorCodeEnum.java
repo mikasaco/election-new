@@ -17,6 +17,7 @@ public enum ErrorCodeEnum {
     ENUM_NOT_EXIST("ENUM_NOT_EXIST","枚举不存在"),
     TOKEN_OPEN_ID_FAILED("TOKEN_OPEN_ID_ERROR","获取微信凭证失败"),
     OPEN_ID_BIND("OPEN_ID_BIND","用户已绑定微信，不允许重复绑定"),
+    OPEN_ID_BIND_OTHER_USER("OPEN_ID_BIND_OTHER_USER","该微信已绑定其他用户"),
     PROCESSIONG_APPLY_EXIST("PROCESSIONG_APPLY_EXIST","已存在审核中的换届申请，请先处理完后再提交新的申请")
     ;
 

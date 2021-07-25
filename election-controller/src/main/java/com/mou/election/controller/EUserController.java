@@ -97,6 +97,14 @@ public class EUserController {
         return EResult.newSuccessInstance(Boolean.TRUE);
     }
 
+    @RequestMapping("queryMySelf")
+    public EResult<EUserVO> queryMySelf(HttpServletRequest httpServletRequest) {
+        Long userId = TokenUtils.getUserIdByToken(httpServletRequest.getHeader("token"));
+
+        EUserDTO userDTO = euserService.getUserById(userId);
+        return EResult.newSuccessInstance(ResponseConvert.userDTO2VO(userDTO));
+    }
+
 
     @RequestMapping("pageQuery")
     public EPageResult<List<EUserVO>> pageQuery(HttpServletRequest httpServletRequest,@RequestBody EUserReqeust request) {
