@@ -5,7 +5,7 @@ import lombok.Data;
 import java.util.List;
 
 @Data
-public class EExamAnswerDTO {
+public class EExamAnswerDTO extends BaseDTO {
 
     private Long examId;
 
@@ -17,5 +17,5 @@ public class EExamAnswerDTO {
 
     private Long userId;
 
-    private List<String> qustionAnswerRequests;
+    private List<String> questionAnswerRequests;
 }

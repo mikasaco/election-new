@@ -18,7 +18,7 @@ public interface ExamService {
 
     Long userAnswer(HttpServletRequest httpServletRequest, EExamAnswerDTO examAnswerDTO);
 
-    EExamDTO getUserAnswer(HttpServletRequest httpServletRequest, EResultDTO resultDTO);
+    EExamDTO getUserAnswer( EResultDTO resultDTO);
 
     Integer count(EExamAnswerDTO examAnswerDTO);
 
@@ -27,4 +27,6 @@ public interface ExamService {
     void update(EExamDTO examDTO);
 
     void delete(Long id);
+
+    PageInfo<EResultDTO> pageQueryResult(EResultDTO resultDTO);
 }

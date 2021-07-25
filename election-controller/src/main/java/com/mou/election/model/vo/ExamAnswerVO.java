@@ -11,5 +11,5 @@ public class ExamAnswerVO implements Serializable {
 
     private Long examId;
 
-    private List<String> qustionAnswerRequests;
+    private List<String> questionAnswerRequests;
 }

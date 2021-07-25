@@ -9,10 +9,7 @@ import com.mou.election.enums.LoginTypeEnum;
 import com.mou.election.enums.QuestionTypeEnum;
 import com.mou.election.model.*;
 import com.mou.election.model.request.*;
-import com.mou.election.model.vo.AnswerVO;
-import com.mou.election.model.vo.ExamAnswerVO;
-import com.mou.election.model.vo.ExamVO;
-import com.mou.election.model.vo.QuestionVO;
+import com.mou.election.model.vo.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.util.CollectionUtils;
 
@@ -120,6 +117,11 @@ public class RequestConvert {
             List<EQuestionDTO> questionDTOS = examVO.getKsQuestionRequests().stream().
                     map(RequestConvert::questionVO2DTO)
                     .collect(Collectors.toList());
+            Integer avgScore = Integer.valueOf(examDTO.getPassScore())/questionDTOS.size();
+            for(EQuestionDTO questionDTO: questionDTOS){
+                questionDTO.setScore(avgScore);
+            }
+
             examDTO.setQuestionDTOS(questionDTOS);
         }
 
@@ -134,6 +136,7 @@ public class RequestConvert {
         questionDTO.setTitle(questionVO.getTitle());
         questionDTO.setType(QuestionTypeEnum.getQuestionTypeByCode(questionVO.getType()));
         if (null == questionVO.getScore()) {
+
             questionDTO.setScore(10);
         } else {
             questionDTO.setScore(Integer.valueOf(questionVO.getScore()));
@@ -167,6 +170,12 @@ public class RequestConvert {
         BeanUtils.copyProperties(examAnswerVO, examAnswerDTO);
 
         return examAnswerDTO;
+    }
+
+    public static EResultDTO resultVO2DTO(ResultVO resultVO){
+        EResultDTO resultDTO = new EResultDTO();
+        BeanUtils.copyProperties(resultVO,resultDTO);
+        return resultDTO;
     }
 
 }

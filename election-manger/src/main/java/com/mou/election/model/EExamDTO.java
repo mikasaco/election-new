@@ -18,9 +18,13 @@ public class EExamDTO extends BaseDTO{
 
     private String passScore;
 
+    private String score;
+
     private String remark;
 
     private String feature;
+
+    private Integer rightNum;
 
     private List<EQuestionDTO> questionDTOS;
 }

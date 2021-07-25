@@ -116,9 +116,11 @@ public class ResponseConvert {
         examVO.setId(examDTO.getId());
         examVO.setGmtCreate(examDTO.getGmtCreate());
         examVO.setGmtModified(examDTO.getGmtModified());
-        examVO.setScore(examDTO.getPassScore());
+        examVO.setScore(examDTO.getScore());
+
         examVO.setTitle(examDTO.getTitle());
         examVO.setRemark(examDTO.getRemark());
+        examVO.setRightNum(examDTO.getRightNum());
         List<QuestionVO> questionVOS = new ArrayList<>();
         if (!CollectionUtils.isEmpty(examDTO.getQuestionDTOS())) {
 
@@ -158,5 +160,11 @@ public class ResponseConvert {
         return answerVO;
     }
 
+
+    public static ResultVO resultDTO2VO(EResultDTO resultDTO){
+        ResultVO resultVO = new ResultVO();
+        BeanUtils.copyProperties(resultDTO,resultVO);
+        return resultVO;
+    }
 
 }

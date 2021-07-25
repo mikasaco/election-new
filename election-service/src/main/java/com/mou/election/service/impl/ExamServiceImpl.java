@@ -16,6 +16,7 @@ import com.mou.election.utils.TokenUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
@@ -121,11 +122,28 @@ public class ExamServiceImpl implements ExamService {
     }
 
     @Override
+    public PageInfo<EResultDTO> pageQueryResult(EResultDTO resultDTO) {
+        EResultDOExample example = new EResultDOExample();
+        example.createCriteria().andUserIdEqualTo(resultDTO.getUserId());
+        Page<EResultDO> page = PageHelper.startPage(resultDTO.getCurrentPageNo(), resultDTO.getPageSize())
+                .doSelectPage(() -> resultDOMapper.selectByExample(example));
+            List<EResultDTO> collect = page.getResult().stream().map(ExamConvert::resultDO2DTO).collect(Collectors.toList());
+        for (EResultDTO eResultDTO : collect) {
+            EExamDTO examDTO = this.getUserAnswer(eResultDTO);
+            eResultDTO.setExamDTO(examDTO);
+        }
+        PageInfo pageInfo = new PageInfo();
+        pageInfo.setTotal(page.getTotal());
+        pageInfo.setList(collect);
+        return pageInfo;
+    }
+
+    @Override
     public Long userAnswer(HttpServletRequest httpServletRequest, EExamAnswerDTO examAnswerDTO) {
         Long userId = TokenUtils.getUserIdByToken(httpServletRequest.getHeader("token"));
         EExamDTO examDTO = get(examAnswerDTO.getExamId());
         List<EQuestionDTO> questionDTOS = examDTO.getQuestionDTOS();
-        List<String> qustionAnswers = examAnswerDTO.getQustionAnswerRequests();
+        List<String> qustionAnswers = examAnswerDTO.getQuestionAnswerRequests();
         List<EExamAnswerDO> examAnswerDOS = new ArrayList<>();
 
         for (int i = 0; i < questionDTOS.size(); i++) {
@@ -163,6 +181,12 @@ public class ExamServiceImpl implements ExamService {
     }
 
     private String calculateScore(List<EQuestionDTO> questionDTOS) {
+
+        long count = questionDTOS.stream().filter(EQuestionDTO::getUserAnswerIsRight).count();
+        if (count == questionDTOS.size()) {
+            return "100";
+        }
+
         Integer sum = questionDTOS.stream().filter(EQuestionDTO::getUserAnswerIsRight)
                 .mapToInt(EQuestionDTO::getScore).sum();
         return sum.toString();
@@ -170,26 +194,31 @@ public class ExamServiceImpl implements ExamService {
     }
 
     @Override
-    public EExamDTO getUserAnswer(HttpServletRequest httpServletRequest, EResultDTO resultDTO) {
-        Long userId = TokenUtils.getUserIdByToken(httpServletRequest.getHeader("token"));
+    public EExamDTO getUserAnswer(EResultDTO resultDTO) {
         EResultDO resultDO = resultDOMapper.selectByPrimaryKey(resultDTO.getId());
         EExamDTO examDTO = get(resultDO.getExamId());
-
+        examDTO.setScore(resultDO.getScore());
         List<EQuestionDTO> questionDTOS = examDTO.getQuestionDTOS();
+        int rightNum = 0;
         for (EQuestionDTO questionDTO : questionDTOS) {
 
             EExamAnswerDOExample example = new EExamAnswerDOExample();
             example.createCriteria().andExamIdEqualTo(resultDO.getExamId()).andResultIdEqualTo(resultDO.getId())
-                    .andQuestionIdEqualTo(questionDTO.getId()).andUserIdEqualTo(userId);
+                    .andQuestionIdEqualTo(questionDTO.getId()).andUserIdEqualTo(resultDTO.getUserId());
             List<EExamAnswerDO> examAnswerDOS = examAnswerDOMapper.selectByExample(example);
             if (examAnswerDOS == null || examAnswerDOS.size() > 1) {
                 questionDTO.setUserAnswerIsRight(false);
                 questionDTO.setAnalysis("");
             } else {
+                if (examAnswerDOS.get(0).getIsRight() == 1) {
+                    rightNum++;
+                }
                 questionDTO.setUserAnswerIsRight(examAnswerDOS.get(0).getIsRight() == 1);
                 questionDTO.setAnalysis(examAnswerDOS.get(0).getResult());
             }
         }
+        examDTO.setRightNum(rightNum);
+
         return examDTO;
     }
 
@@ -287,7 +316,7 @@ public class ExamServiceImpl implements ExamService {
         questionDOExample.createCriteria().andExamIdEqualTo(examDO.getId());
         List<EQuestionDO> questionDOS = questionDOMapper.selectByExample(questionDOExample);
 
-        for(EQuestionDO questionDO: questionDOS){
+        for (EQuestionDO questionDO : questionDOS) {
             questionDOMapper.deleteByPrimaryKey(questionDO.getId());
 
             EAnswerDOExample answerDOExample = new EAnswerDOExample();

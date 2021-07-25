@@ -7,6 +7,7 @@ import com.mou.election.model.*;
 import com.mou.election.model.vo.ExamAnswerVO;
 import com.mou.election.model.vo.ExamCountVO;
 import com.mou.election.model.vo.ExamVO;
+import com.mou.election.model.vo.ResultVO;
 import com.mou.election.service.ExamService;
 import com.mou.election.utils.TokenUtils;
 import lombok.extern.slf4j.Slf4j;
@@ -45,7 +46,7 @@ public class ExamController {
     }
 
     @RequestMapping("delete/{id}")
-    public EResult<Boolean> delete(@PathVariable Long id){
+    public EResult<Boolean> delete(@PathVariable Long id) {
         examService.delete(id);
         return EResult.newSuccessInstance(true);
     }
@@ -58,6 +59,16 @@ public class ExamController {
         return EPageResult.newSuccessInstance(pageInfo.getTotal(), examVOS);
     }
 
+    @RequestMapping("pageQueryResult")
+    public EResult<ResultVO> pageQueryResult(HttpServletRequest httpServletRequest,@RequestBody ResultVO resultVO) {
+        EResultDTO resultDTO = RequestConvert.resultVO2DTO(resultVO);
+        Long userId = TokenUtils.getUserIdByToken(httpServletRequest.getHeader("token"));
+        resultDTO.setUserId(userId);
+        PageInfo<EResultDTO> pageInfo = examService.pageQueryResult(resultDTO);
+        List<ResultVO> resultVOS = pageInfo.getList().stream().map(ResponseConvert::resultDTO2VO).collect(Collectors.toList());
+        return EPageResult.newSuccessInstance(pageInfo.getTotal(), resultVOS);
+    }
+
     @RequestMapping("userAnswer")
     public EResult<Long> userAnswer(HttpServletRequest httpServletRequest, @RequestBody ExamAnswerVO examAnswerVO) {
         EExamAnswerDTO examAnswerDTO = RequestConvert.examAnswerVO2DTO(examAnswerVO);
@@ -67,10 +78,13 @@ public class ExamController {
 
     @RequestMapping("getExamResult/{id}")
     public EResult<ExamVO> getExamResult(HttpServletRequest httpServletRequest, @PathVariable Long id) {
+        Long userId = TokenUtils.getUserIdByToken(httpServletRequest.getHeader("token"));
+
         EResultDTO resultDTO = new EResultDTO();
         resultDTO.setId(id);
+        resultDTO.setUserId(userId);
 
-        EExamDTO examDTO = examService.getUserAnswer(httpServletRequest, resultDTO);
+        EExamDTO examDTO = examService.getUserAnswer( resultDTO);
         ExamVO examVO = ResponseConvert.examDTO2VO(examDTO);
         return EResult.newSuccessInstance(examVO);
     }
@@ -104,7 +118,7 @@ public class ExamController {
         right.setUserId(userId);
         right.setRight(1);
         Integer rightCount = examService.count(right);
-        examCountVO.setRate(rightCount *100/ count);
+        examCountVO.setRate(rightCount * 100 / count);
 
         EResultDTO resultDTO = new EResultDTO();
         resultDTO.setUserId(userId);

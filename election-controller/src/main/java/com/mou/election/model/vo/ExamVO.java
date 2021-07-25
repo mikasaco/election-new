@@ -25,6 +25,8 @@ public class ExamVO extends BaseRequest {
 
     private String feature;
 
+    private Integer rightNum;
+
     private List<QuestionVO> ksQuestionRequests;
 
     private List<QuestionVO> ksQuestionResponses;

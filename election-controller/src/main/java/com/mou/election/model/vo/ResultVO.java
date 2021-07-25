@@ -1,11 +1,13 @@
-package com.mou.election.model;
+package com.mou.election.model.vo;
 
+import com.mou.election.model.EExamDTO;
+import com.mou.election.model.request.BaseRequest;
 import lombok.Data;
 
 import java.util.Date;
 
 @Data
-public class EResultDTO extends BaseDTO{
+public class ResultVO extends BaseRequest {
 
     private Long id;
 
@@ -28,6 +30,4 @@ public class EResultDTO extends BaseDTO{
     private Integer pass;
 
     private EExamDTO examDTO;
-
-
 }
