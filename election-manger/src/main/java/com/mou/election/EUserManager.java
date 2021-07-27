@@ -146,6 +146,9 @@ public class EUserManager {
         if (queryDTO.getPost() != null) {
             criteria.andPostEqualTo(queryDTO.getPost());
         }
+        if(queryDTO.getOrganizationId() != null){
+            criteria.andOrganizationIdEqualTo(queryDTO.getOrganizationId());
+        }
         return example;
     }
 

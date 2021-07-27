@@ -14,4 +14,9 @@ public class OrganizationTotalVO {
     private Integer userNum;
 
     private Integer applyUserNum;
+
+    private Integer notApplyNum;
+
+    private Integer examNum;
+
 }
