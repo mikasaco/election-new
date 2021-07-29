@@ -1,5 +1,6 @@
 package com.mou.election.controller;
 
+import com.alibaba.excel.EasyExcel;
 import com.github.pagehelper.PageInfo;
 import com.mou.election.EUserManager;
 import com.mou.election.convert.RequestConvert;
@@ -12,16 +13,17 @@ import com.mou.election.model.EUserDTO;
 import com.mou.election.model.request.EApplyRequest;
 import com.mou.election.model.vo.ApplyTotalVO;
 import com.mou.election.model.vo.EApplyVO;
+import com.mou.election.model.vo.EdataDictionaryVO;
 import com.mou.election.service.EApplyService;
 import com.mou.election.utils.TokenUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -99,5 +101,18 @@ public class EApplyController {
         applyTotalVO.setFinishApplyNum(passCount+rejectedCount);
 
         return EResult.newSuccessInstance(applyTotalVO);
+    }
+
+    @PostMapping(value = "export",
+            produces = "application/json;charset=utf-8")
+    public void generateImportTemplate(HttpServletResponse response,HttpServletRequest httpServletRequest,@RequestBody EApplyRequest request) throws IOException {
+        PageInfo<EApplyDTO> pageInfo = applyService.pageQuery(httpServletRequest,RequestConvert.applyRequest2DTO(request));
+        List<EApplyVO> eapplyVos = pageInfo.getList().stream().map(ResponseConvert::applyDTO2VO).collect(Collectors.toList());
+        response.setContentType("application/vnd.ms-excel");
+        response.setCharacterEncoding("utf-8");
+        String fileName = URLEncoder.encode("换届申请", "UTF-8").replaceAll("\\+", "%20");
+        response.setHeader("Content-disposition", "attachment;filename*=utf-8''" + fileName + ".xlsx");
+        EasyExcel.write(response.getOutputStream(), EApplyVO.class).sheet("换届申请")
+                .doWrite(eapplyVos);
     }
 }
