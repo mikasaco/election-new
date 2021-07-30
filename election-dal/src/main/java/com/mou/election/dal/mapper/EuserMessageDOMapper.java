@@ -104,4 +104,6 @@ public interface EuserMessageDOMapper {
     List<EuserMessageJoinDO> findUserMessageJoinByIsCT(String userAttr);
 
     List<EuserMessageJoinDO> findUserMessageJoinByNotice(String userAttr);
+
+    List<EuserMessageJoinDO> findUserMessageJoinByMessageId(@Param("phone")String phone,@Param("id") String id);
 }

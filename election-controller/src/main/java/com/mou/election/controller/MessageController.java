@@ -119,6 +119,18 @@ public class MessageController {
         return EResult.newSuccessInstance(responseMap);
     }
 
+    @GetMapping(value = "notice/{id}",
+            produces = "application/json;charset=utf-8")
+    public EResult replyReadByMessage(@PathVariable String id) {
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        String token = request.getHeader("token");
+        if(token == null){
+            return EResult.newErrorInstance(ErrorCodeEnum.PARAM_ERROR);
+        }
+        EUserDTO euserDTO = euserManager.getUserByToken(token);
+        return EResult.newSuccessInstance(emessageService.replyReadByMessage(id,euserDTO.getPhone()));
+    }
+
     /**
      * 根据不同的维度回执展示
      * @return

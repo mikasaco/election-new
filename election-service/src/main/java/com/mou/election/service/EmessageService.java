@@ -1,5 +1,6 @@
 package com.mou.election.service;
 
+import com.mou.election.dal.domian.EuserMessageJoinDO;
 import com.mou.election.model.*;
 
 import java.util.List;
@@ -23,5 +24,7 @@ public interface EmessageService {
     List<EuserMessageJoinUserDTO> replyShow(EuserMessageDTO euserMessageDTO, EPageResult page);
 
     List<EuserMessageDTO> replyShow(EPageResult page, String messageId, String userAttri);
+
+    EuserMessageJoinDTO replyReadByMessage(String phone,String id);
 
 }

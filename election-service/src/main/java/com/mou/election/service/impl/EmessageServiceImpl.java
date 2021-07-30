@@ -228,6 +228,16 @@ public class EmessageServiceImpl implements EmessageService {
         return pageInfo.getResult().stream().map(EmessageConvert::do2dto).collect(Collectors.toList());
     }
 
+    @Override
+    public EuserMessageJoinDTO replyReadByMessage(String phone, String id) {
+        List<EuserMessageJoinDO> euserMessageJoinDOS = euserMessageDOMapper.findUserMessageJoinByMessageId(phone,id);
+        if(euserMessageJoinDOS == null && euserMessageJoinDOS.size()<0){
+            return null;
+        }
+        return EmessageConvert.do2dto(euserMessageJoinDOS.get(0));
+
+    }
+
     private void createCriteriaByUuid(EmessageDOExample messageExample, String uuid) {
         EmessageDOExample.Criteria criteria = messageExample.createCriteria();
         criteria.andUuidEqualTo(uuid);

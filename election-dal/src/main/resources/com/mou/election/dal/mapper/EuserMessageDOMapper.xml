@@ -261,6 +261,14 @@
         and m.status = '0'
   </select>
 
+  <select id="findUserMessageJoinByMessageId" resultMap="findUserMessageJoin">
+        select um.user_attr,um.message_reply_status,um.popup_status,um.read_status,m.*
+            from e_user_message um
+        left join  e_message m on m.uuid = um.message_id
+        where  um.message_id = #{id} and um.user_attr = #{phone}
+        and m.status = '0'
+  </select>
+
   <select id="findUserMessageJoinByNotice" resultMap="findUserMessageJoin">
     select * from e_user_message um
     left join  e_message m on m.uuid = um.message_id
