@@ -103,13 +103,14 @@ public class EmessageServiceImpl implements EmessageService {
                 page.setPageSize(ElectionConstants.PAGE_DEFAULT_SIZE);
             }
             if(StringUtil.isNotEmpty(page.getKeyWord())){
+                page.setKeyWord("%" + page.getKeyWord() + "%");
                 criteria.andHeadLike(page.getKeyWord());
                 EmessageDOExample.Criteria criteriaDesct = emessageDOExample.or();
                 criteriaDesct.andStatusEqualTo(ElectionConstants.MESSAGE_STATUS_Y);
                 criteriaDesct.andDesctLike(page.getKeyWord());
-                EmessageDOExample.Criteria criteriaDetail = emessageDOExample.or();
+                /*EmessageDOExample.Criteria criteriaDetail = emessageDOExample.or();
                 criteriaDetail.andStatusEqualTo(ElectionConstants.MESSAGE_STATUS_Y);
-                criteriaDetail.andDetailsLike(page.getKeyWord());
+                criteriaDetail.andDetailsLike(page.getKeyWord());*/
             }
             Page<EmessageDO> pageInfo = PageHelper.startPage(page.getCurrentPageNo(),page.getPageSize(),"create_time desc")
                     .doSelectPage(()->emessageDOMapper.selectByExample(emessageDOExample));
@@ -229,7 +230,7 @@ public class EmessageServiceImpl implements EmessageService {
     }
 
     @Override
-    public EuserMessageJoinDTO replyReadByMessage(String phone, String id) {
+    public EuserMessageJoinDTO replyReadByMessage(String id, String phone) {
         List<EuserMessageJoinDO> euserMessageJoinDOS = euserMessageDOMapper.findUserMessageJoinByMessageId(phone,id);
         if(euserMessageJoinDOS == null && euserMessageJoinDOS.size()<0){
             return null;

@@ -23,4 +23,6 @@ public class EuserMessageJoinUserVO extends EUserVO {
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
 
+    private String orgName;
+
 }

@@ -16,4 +16,6 @@ public class EuserMessageJoinUserDO extends EuserDO{
     private Integer popupStatus;
 
     private Integer readStatus;
+
+    private String orgName;
 }

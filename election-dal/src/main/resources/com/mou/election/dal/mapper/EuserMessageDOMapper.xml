@@ -31,6 +31,7 @@
     <result column="message_reply_status" jdbcType="INTEGER" property="messageReplyStatus" />
     <result column="popup_status" jdbcType="INTEGER" property="popupStatus" />
     <result column="read_status" jdbcType="INTEGER" property="readStatus" />
+    <result column="organization_name" jdbcType="INTEGER" property="orgName" />
   </resultMap>
 
   <sql id="Example_Where_Clause">
@@ -275,7 +276,7 @@
     where
     (um.read_status != '0'
     or(um.read_status = '0' and DATE_SUB(CURDATE(), INTERVAL 30 DAY) <![CDATA[<= ]]> date(m.create_time) ) )
-    and user_attr = #{userAttr} and m.status = '0'and m.is_change_term != 'Y' order by um.read_status desc,m.create_time desc
+    and user_attr = #{userAttr} and m.status = '0'and m.is_change_term != 'Y' order by m.create_time desc
   </select>
 
   <select id="findUserMessageJoinByIsCT" resultMap="findUserMessageJoin">
@@ -287,9 +288,10 @@
   </select>
 
   <select id="findUserMessageJoinByIsReceipt" resultMap="findUserMessageJoinUser">
-        select um.message_id,um.message_reply_status,um.popup_status,um.read_status,u.*
+        select um.message_id,um.message_reply_status,um.popup_status,um.read_status,u.*,org.organization_name
             from e_user_message um
         left join  e_user u on u.phone = um.user_attr
+        left join  e_organization org on u.organization_id = org.id
         where um.message_id = #{messageId}
   </select>
 
