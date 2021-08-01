@@ -87,6 +87,9 @@ public class EorganizationManager {
         if (StringUtil.isNotEmpty(eorganizationDTO.getOrganizationName())) {
             criteria.andOrganizationNameLike(eorganizationDTO.getOrganizationName());
         }
+        if(StringUtil.isNotEmpty(eorganizationDTO.getKeyWord())){
+            criteria.andOrganizationNameLike("%"+eorganizationDTO.getKeyWord()+"%");
+        }
         return example;
     }
 

@@ -105,7 +105,7 @@ public class EUserManager {
         EuserDOExample example = new EuserDOExample();
         EuserDOExample.Criteria criteria = example.createCriteria();
         if (StringUtil.isNotEmpty(queryDTO.getUserName())) {
-            criteria.andUserNameEqualTo(queryDTO.getUserName());
+            criteria.andUserNameLike("%" +queryDTO.getUserName()+ "%");
         }
         if (null != queryDTO.getOrganizationId()) {
             criteria.andOrganizationIdEqualTo(queryDTO.getOrganizationId());
@@ -149,6 +149,10 @@ public class EUserManager {
         if(queryDTO.getOrganizationId() != null){
             criteria.andOrganizationIdEqualTo(queryDTO.getOrganizationId());
         }
+        if(StringUtil.isNotEmpty(queryDTO.getKeyWord())){
+            criteria.andUserNameLike("%" + queryDTO.getUserName() + "%");
+        }
+
         return example;
     }
 

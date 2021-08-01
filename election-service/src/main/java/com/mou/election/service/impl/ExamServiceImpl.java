@@ -1,8 +1,11 @@
 package com.mou.election.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.github.pagehelper.util.StringUtil;
+import com.google.common.collect.ImmutableMap;
 import com.mou.election.convert.EapplyConvert;
 import com.mou.election.convert.ExamConvert;
 import com.mou.election.dal.domian.*;
@@ -112,6 +115,12 @@ public class ExamServiceImpl implements ExamService {
     @Override
     public PageInfo<EExamDTO> pageQuery(EExamDTO examDTO) {
         EExamDOExample example = new EExamDOExample();
+        EExamDOExample.Criteria criteria = example.createCriteria();
+        criteria.andFeatureIsNull();
+        if (StringUtil.isNotEmpty(examDTO.getTitle())) {
+            criteria.andTitleLike("%" + examDTO.getTitle() + "%");
+        }
+
         Page<EExamDO> page = PageHelper.startPage(examDTO.getCurrentPageNo(), examDTO.getPageSize())
                 .doSelectPage(() -> examDOMapper.selectByExample(example));
         List<EExamDTO> collect = page.getResult().stream().map(ExamConvert::do2dto).collect(Collectors.toList());
@@ -127,7 +136,7 @@ public class ExamServiceImpl implements ExamService {
         example.createCriteria().andUserIdEqualTo(resultDTO.getUserId());
         Page<EResultDO> page = PageHelper.startPage(resultDTO.getCurrentPageNo(), resultDTO.getPageSize())
                 .doSelectPage(() -> resultDOMapper.selectByExample(example));
-            List<EResultDTO> collect = page.getResult().stream().map(ExamConvert::resultDO2DTO).collect(Collectors.toList());
+        List<EResultDTO> collect = page.getResult().stream().map(ExamConvert::resultDO2DTO).collect(Collectors.toList());
         for (EResultDTO eResultDTO : collect) {
             EExamDTO examDTO = this.getUserAnswer(eResultDTO);
             eResultDTO.setExamDTO(examDTO);
@@ -310,18 +319,20 @@ public class ExamServiceImpl implements ExamService {
         if (examDO == null) {
             throw new EbizException(ErrorCodeEnum.PARAM_ERROR);
         }
-        examDOMapper.deleteByPrimaryKey(id);
+        ImmutableMap<String, String> map = ImmutableMap.of("is_delete", "true");
+        examDO.setFeature(JSONObject.toJSONString(map));
+        examDOMapper.updateByPrimaryKeySelective(examDO);
 
-        EQuestionDOExample questionDOExample = new EQuestionDOExample();
-        questionDOExample.createCriteria().andExamIdEqualTo(examDO.getId());
-        List<EQuestionDO> questionDOS = questionDOMapper.selectByExample(questionDOExample);
-
-        for (EQuestionDO questionDO : questionDOS) {
-            questionDOMapper.deleteByPrimaryKey(questionDO.getId());
-
-            EAnswerDOExample answerDOExample = new EAnswerDOExample();
-            answerDOExample.createCriteria().andQuestionIdEqualTo(questionDO.getId());
-            answerDOMapper.deleteByExample(answerDOExample);
-        }
+//        EQuestionDOExample questionDOExample = new EQuestionDOExample();
+//        questionDOExample.createCriteria().andExamIdEqualTo(examDO.getId());
+//        List<EQuestionDO> questionDOS = questionDOMapper.selectByExample(questionDOExample);
+//
+//        for (EQuestionDO questionDO : questionDOS) {
+//            questionDOMapper.deleteByPrimaryKey(questionDO.getId());
+//
+//            EAnswerDOExample answerDOExample = new EAnswerDOExample();
+//            answerDOExample.createCriteria().andQuestionIdEqualTo(questionDO.getId());
+//            answerDOMapper.deleteByExample(answerDOExample);
+//        }
     }
 }

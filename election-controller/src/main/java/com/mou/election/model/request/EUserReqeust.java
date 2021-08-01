@@ -48,4 +48,5 @@ public class EUserReqeust extends BaseRequest implements Serializable {
     private String loginType;
 
     private List<String> roleCodes;
+
 }

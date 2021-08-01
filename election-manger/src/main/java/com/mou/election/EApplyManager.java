@@ -3,6 +3,7 @@ package com.mou.election;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.github.pagehelper.util.StringUtil;
 import com.mou.election.convert.EapplyConvert;
 import com.mou.election.convert.EpermissionConvert;
 import com.mou.election.dal.domian.EApplyDO;
@@ -88,6 +89,16 @@ public class EApplyManager {
         }
         if(queryDTO.getUserId() !=null){
             criteria.andUserIdEqualTo(queryDTO.getUserId());
+        }
+        if(StringUtil.isNotEmpty(queryDTO.getKeyWord())){
+            EUserDTO userDTO = new EUserDTO();
+            userDTO.setUserName(queryDTO.getKeyWord());
+            List<EUserDTO> query = userManager.query(userDTO);
+            if(!query.isEmpty()){
+                criteria.andUserIdIn(query.stream().map(EUserDTO::getId).collect(Collectors.toList()));
+            }else {
+                criteria.andUserIdEqualTo(0L);
+            }
         }
 
         return example;

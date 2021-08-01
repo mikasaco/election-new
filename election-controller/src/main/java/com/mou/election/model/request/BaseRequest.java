@@ -21,4 +21,6 @@ public class BaseRequest implements Serializable {
 
     private Integer pageSize = 10;
 
+    private String keyWord;
+
 }

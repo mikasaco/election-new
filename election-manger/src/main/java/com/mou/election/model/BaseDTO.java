@@ -21,5 +21,6 @@ public class BaseDTO implements Serializable {
 
     private Integer pageSize;
 
+    private String keyWord;
 
 }

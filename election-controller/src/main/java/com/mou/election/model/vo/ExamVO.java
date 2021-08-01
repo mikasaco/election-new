@@ -27,6 +27,8 @@ public class ExamVO extends BaseRequest {
 
     private Integer rightNum;
 
+    private boolean isDelete;
+
     private List<QuestionVO> ksQuestionRequests;
 
     private List<QuestionVO> ksQuestionResponses;

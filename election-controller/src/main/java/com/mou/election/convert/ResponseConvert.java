@@ -1,5 +1,7 @@
 package com.mou.election.convert;
 
+import com.alibaba.fastjson.JSON;
+import com.github.pagehelper.util.StringUtil;
 import com.mou.election.enums.QuestionTypeEnum;
 import com.mou.election.model.*;
 import com.mou.election.model.vo.*;
@@ -121,6 +123,13 @@ public class ResponseConvert {
         examVO.setTitle(examDTO.getTitle());
         examVO.setRemark(examDTO.getRemark());
         examVO.setRightNum(examDTO.getRightNum());
+        examVO.setFeature(examDTO.getFeature());
+
+        if(StringUtil.isNotEmpty(examDTO.getFeature())){
+            String isDelete = (String) JSON.parseObject(examDTO.getFeature()).get("is_delete");
+            examVO.setDelete("true".equals(isDelete));
+
+        }
         List<QuestionVO> questionVOS = new ArrayList<>();
         if (!CollectionUtils.isEmpty(examDTO.getQuestionDTOS())) {
 
