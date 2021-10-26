@@ -29,4 +29,6 @@ public class EorganizationDTO extends BaseDTO implements Serializable {
     private String organizationName;
 
     private String feature;
+
+    private Date changeTermTime;
 }

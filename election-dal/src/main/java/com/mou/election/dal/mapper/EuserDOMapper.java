@@ -1,5 +1,6 @@
 package com.mou.election.dal.mapper;
 
+import com.mou.election.dal.domian.EorganizationDO;
 import com.mou.election.dal.domian.EuserDO;
 import com.mou.election.dal.domian.EuserDOExample;
 import java.util.List;
@@ -93,4 +94,6 @@ public interface EuserDOMapper {
      * @mbggenerated Wed Jul 07 01:42:13 CST 2021
      */
     int updateByPrimaryKey(EuserDO record);
+
+    EorganizationDO getOrgByUserId(Long id);
 }

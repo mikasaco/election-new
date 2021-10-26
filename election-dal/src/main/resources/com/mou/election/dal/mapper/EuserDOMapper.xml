@@ -395,4 +395,10 @@
       feature = #{feature,jdbcType=VARCHAR}
     where id = #{id,jdbcType=BIGINT}
   </update>
+
+  <select id="getOrgByUserId" parameterType="java.lang.Long" resultMap="com.mou.election.dal.mapper.EorganizationDOMapper.BaseResultMap">
+    select * from e_user a left join e_organization b on a.organization_id=b.id
+    where a.id = #{id,jdbcType=BIGINT}
+  </select>
+
 </mapper>

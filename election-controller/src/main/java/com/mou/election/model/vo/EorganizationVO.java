@@ -27,4 +27,5 @@ public class EorganizationVO {
 
     private String feature;
 
+    private Date changeTermTime;
 }

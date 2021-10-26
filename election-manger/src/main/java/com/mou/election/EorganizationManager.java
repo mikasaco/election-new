@@ -33,6 +33,10 @@ public class EorganizationManager {
     @Autowired
     private EorganizationDOMapper eorganizationDOMapper;
 
+    public EorganizationDTO queryById(Long id){
+        EorganizationDO eorganizationDO = eorganizationDOMapper.selectByPrimaryKey(id);
+        return EorganizationConvert.do2dto(eorganizationDO);
+    }
 
     public void add(EorganizationDTO addDTO) {
         EorganizationDO eorganizationDO = EorganizationConvert.dto2do(addDTO);

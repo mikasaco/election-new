@@ -1,16 +1,16 @@
 package com.mou.election;
 
+import com.alibaba.excel.util.StringUtils;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.github.pagehelper.util.StringUtil;
 import com.mou.election.convert.EapplyConvert;
 import com.mou.election.convert.EpermissionConvert;
-import com.mou.election.dal.domian.EApplyDO;
-import com.mou.election.dal.domian.EApplyDOExample;
-import com.mou.election.dal.domian.EpermissionDO;
-import com.mou.election.dal.domian.EpermissionDOExample;
+import com.mou.election.dal.domian.*;
 import com.mou.election.dal.mapper.EApplyDOMapper;
+import com.mou.election.dal.mapper.EorganizationDOMapper;
+import com.mou.election.dal.mapper.EuserDOMapper;
 import com.mou.election.model.EApplyDTO;
 import com.mou.election.model.EPermissionDTO;
 import com.mou.election.model.EUserDTO;
@@ -33,6 +33,10 @@ public class EApplyManager {
 
     @Autowired
     private EApplyDOMapper applyDOMapper;
+    @Autowired
+    private EuserDOMapper userDOMapper;
+    @Autowired
+    private EorganizationDOMapper organizationDOMapper;
 
     @Autowired
     private EUserManager userManager;
@@ -49,6 +53,12 @@ public class EApplyManager {
         EApplyDO applyDO = EapplyConvert.dto2do(applyDTO);
         applyDO.setGmtModified(new Date());
         applyDOMapper.updateByPrimaryKeySelective(applyDO);
+        if("PASS".equals(applyDTO.getStatus())) {
+           EorganizationDO eorganizationDO = userDOMapper.getOrgByUserId(applyDTO.getUserId());
+           eorganizationDO.setChangeTermTime(applyDTO.getGmtModified());
+           organizationDOMapper.updateByPrimaryKey(eorganizationDO);
+        }
+
     }
 
     public void delete(Long id) {

@@ -1,5 +1,6 @@
 package com.mou.election.service.impl;
 
+import com.alibaba.excel.util.StringUtils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.auth0.jwt.JWT;
@@ -12,10 +13,7 @@ import com.mou.election.constants.EConstants;
 import com.mou.election.enums.ErrorCodeEnum;
 import com.mou.election.enums.LoginTypeEnum;
 import com.mou.election.exception.EbizException;
-import com.mou.election.model.EPermissionDTO;
-import com.mou.election.model.EorganizationDTO;
-import com.mou.election.model.EroleDTO;
-import com.mou.election.model.EUserDTO;
+import com.mou.election.model.*;
 import com.mou.election.service.EuserService;
 import com.mou.election.utils.HttpClientUtils;
 import com.mou.election.utils.TokenUtils;
@@ -23,6 +21,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.swing.text.StyledEditorKit;
@@ -82,20 +82,29 @@ public class EuserServiceImpl implements EuserService {
 
     @Override
     public void add(EUserDTO userDTO) {
+        EUserDTO managerUserDTO = getManagerUser();
         EUserDTO euserDTO = userManager.getUserByPhone(userDTO.getPhone());
         if (euserDTO != null) {
             throw new EbizException(ErrorCodeEnum.USER_EXIST);
         }
+        convertManagerUserToUser(managerUserDTO,euserDTO);
         userManager.add(userDTO);
     }
 
     @Override
     public void update(EUserDTO euserDTO) {
+        if(!judgeHasAuth(euserDTO)){
+            throw new EbizException(ErrorCodeEnum.PERMISSION_DENIED_USER);
+        }
         userManager.update(euserDTO);
     }
 
     @Override
     public void delete(Long id) {
+        EUserDTO euserDTO = userManager.getUserById(id);
+        if(!judgeHasAuth(euserDTO)){
+            throw new EbizException(ErrorCodeEnum.PERMISSION_DENIED_USER);
+        }
         userManager.delete(id);
     }
 
@@ -173,6 +182,7 @@ public class EuserServiceImpl implements EuserService {
         if (!CollectionUtils.isEmpty(userDTO.getPermissionDTOS())) {
             for (EPermissionDTO permissionDTO : userDTO.getPermissionDTOS()) {
                 if ("query_all_user".equalsIgnoreCase(permissionDTO.getPermissionCode())) {
+                    queryDTO.setOrganizationId(null);
                     isAdmin = true;
                 }
             }
@@ -197,6 +207,7 @@ public class EuserServiceImpl implements EuserService {
             EorganizationDTO eorganizationDTO = eorganizationManager.getById(dto.getOrganizationId());
             if (null != eorganizationDTO) {
                 dto.setOrganization(eorganizationDTO.getOrganizationName());
+                dto.setChangeTermDate(eorganizationDTO.getChangeTermTime());
             }
         }
 
@@ -223,6 +234,40 @@ public class EuserServiceImpl implements EuserService {
                 });
             });
         }
+    }
+
+    public void convertManagerUserToUser(EUserDTO managerUser,EUserDTO user) {
+        if(StringUtils.isEmpty(user.getOrganizationId())){
+            user.setOrganizationId(managerUser.getOrganizationId());
+            user.setOrganization(managerUser.getOrganization());
+            user.setChangeTermDate(managerUser.getChangeTermDate());
+        }else{
+            EorganizationDTO eorganizationDTO = eorganizationManager.queryById(user.getOrganizationId());
+            user.setOrganization(eorganizationDTO.getOrganizationName());
+            user.setChangeTermDate(eorganizationDTO.getChangeTermTime());
+        }
+    }
+
+    public EUserDTO  getManagerUser(){
+        HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        String token = request.getHeader("token");
+        EUserDTO managerUserDTO = userManager.getUserByToken(token);
+        if(managerUserDTO == null){
+            throw new EbizException(ErrorCodeEnum.USER_NOT_EXIST);
+        }
+        return managerUserDTO;
+    }
+
+    public boolean judgeHasAuth(EUserDTO user) {
+        EUserDTO managerUserDTO =  getManagerUser();
+        if (!CollectionUtils.isEmpty(managerUserDTO.getPermissionDTOS())) {
+            for (EPermissionDTO permissionDTO : managerUserDTO.getPermissionDTOS()) {
+                if ("query_all_user".equalsIgnoreCase(permissionDTO.getPermissionCode())) {
+                    return true;
+                }
+            }
+        }
+        return managerUserDTO.getOrganizationId() == user.getOrganizationId();
     }
 
     @Override

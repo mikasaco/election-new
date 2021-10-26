@@ -20,6 +20,7 @@ public enum ErrorCodeEnum {
     OPEN_ID_BIND_OTHER_USER("OPEN_ID_BIND_OTHER_USER","该微信已绑定其他用户"),
     PROCESSIONG_APPLY_EXIST("PROCESSIONG_APPLY_EXIST","已存在审核中的换届申请，请先处理完后再提交新的申请"),
     FILE_UPLOAD_ERROR("FILE_UPLOAD_ERROR","上传文件失败"),
+    PERMISSION_DENIED_USER("PERMISSION_DENIED_ERROR","没有操作该用户的权限")
     ;
 
 

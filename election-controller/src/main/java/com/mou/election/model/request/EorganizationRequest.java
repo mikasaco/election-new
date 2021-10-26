@@ -29,4 +29,6 @@ public class EorganizationRequest extends BaseRequest implements Serializable {
     private String organizationName;
 
     private String feature;
+
+    private Date changeTermTime;
 }
