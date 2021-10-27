@@ -40,5 +40,7 @@ public class EApplyVO {
     private String status;
 
     private EUserVO userVO;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private Date delayElectionDate;
 
 }

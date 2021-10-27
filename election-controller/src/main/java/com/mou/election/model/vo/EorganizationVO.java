@@ -1,5 +1,6 @@
 package com.mou.election.model.vo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -26,6 +27,8 @@ public class EorganizationVO {
     private String organizationName;
 
     private String feature;
-
+    @JsonFormat(pattern = "yyyy-MM-dd" )
     private Date changeTermTime;
+
+    private int disChangeDay;
 }

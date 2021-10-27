@@ -39,5 +39,7 @@ public class EApplyRequest extends BaseRequest {
     private Long organizationId;
 
     private List<Long> userIds;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private Date delayElectionDate;
 
 }

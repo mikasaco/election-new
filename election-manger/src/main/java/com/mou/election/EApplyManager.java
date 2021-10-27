@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -53,12 +54,13 @@ public class EApplyManager {
         EApplyDO applyDO = EapplyConvert.dto2do(applyDTO);
         applyDO.setGmtModified(new Date());
         applyDOMapper.updateByPrimaryKeySelective(applyDO);
-        if("PASS".equals(applyDTO.getStatus())) {
-           EorganizationDO eorganizationDO = userDOMapper.getOrgByUserId(applyDTO.getUserId());
-           eorganizationDO.setChangeTermTime(applyDTO.getGmtModified());
-           organizationDOMapper.updateByPrimaryKey(eorganizationDO);
+        if("END".equals(applyDTO.getStatus())) {
+            EorganizationDO eorganizationDO = userDOMapper.getOrgByUserId(applyDTO.getUserId());
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(applyDTO.getApplyElectionDate());calendar.add(Calendar.YEAR,3);
+            eorganizationDO.setChangeTermTime(calendar.getTime());
+            organizationDOMapper.updateByPrimaryKey(eorganizationDO);
         }
-
     }
 
     public void delete(Long id) {

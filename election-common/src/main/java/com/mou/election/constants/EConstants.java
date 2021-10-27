@@ -12,9 +12,9 @@ public class EConstants {
 
     public static final String ROLE = "role";
 
-    public static final String WEIXIN_APP_ID = "wxa91ab72996694cf9";
+    public static final String WEIXIN_APP_ID = "wx781e70299f01c115";
 
-    public static final String WEIXIN_SECRET = "e484c842653c299bfbce2a7a690cbbea";
+    public static final String WEIXIN_SECRET = "9a6ecc056769ad451433e71e577f9f78";
 
     public static final String GRANT_TYPE = "authorization_code";
 

@@ -16,6 +16,7 @@ import com.mou.election.model.EorganizationDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -78,6 +79,10 @@ public class EorganizationManager {
         Page<EorganizationDO> page = PageHelper.startPage(eorganizationDTO.getCurrentPageNo(),eorganizationDTO.getPageSize())
                 .doSelectPage(()->eorganizationDOMapper.selectByExample(example));
         List<EorganizationDTO> collect = page.getResult().stream().map(EorganizationConvert::do2dto).collect(Collectors.toList());
+        collect.forEach( eorganizationDTO1 -> {
+            eorganizationDTO1.setDisChangeDay(countChangeDays(eorganizationDTO1.getChangeTermTime()));
+            }
+        );
         PageInfo pageInfo = new PageInfo();
         pageInfo.setTotal(page.getTotal());
         pageInfo.setList(collect);
@@ -100,5 +105,14 @@ public class EorganizationManager {
     public Integer count(EorganizationDTO eorganizationDTO){
         EorganizationDOExample eorganizationDOExample = buildExample(eorganizationDTO);
         return eorganizationDOMapper.countByExample(eorganizationDOExample);
+    }
+
+    private int countChangeDays(Date changeDate) {
+        Calendar c1 = Calendar.getInstance();
+        Calendar c2 = Calendar.getInstance();
+        c2.setTime(changeDate);
+        int day = c1.get(Calendar.DATE);
+        int oldDay = c2.get(Calendar.DATE);
+        return oldDay-day;
     }
 }

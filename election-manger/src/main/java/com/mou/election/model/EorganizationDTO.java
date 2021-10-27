@@ -31,4 +31,6 @@ public class EorganizationDTO extends BaseDTO implements Serializable {
     private String feature;
 
     private Date changeTermTime;
+
+    private int disChangeDay;
 }

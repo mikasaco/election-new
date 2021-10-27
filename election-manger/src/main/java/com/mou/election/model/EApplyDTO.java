@@ -47,4 +47,6 @@ public class EApplyDTO extends BaseDTO{
     private Long organizationId;
 
     private List<Long> userIds;
+
+    private Date delayElectionDate;
 }
