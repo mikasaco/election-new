@@ -16,7 +16,6 @@
     <result column="apply_remark" property="applyRemark" jdbcType="VARCHAR" />
     <result column="feature" property="feature" jdbcType="VARCHAR" />
     <result column="status" property="status" jdbcType="VARCHAR" />
-    <result column="delay" property="status" jdbcType="VARCHAR" />
     <result column="delay_election_date" property="delayElectionDate" jdbcType="TIMESTAMP" />
   </resultMap>
   <sql id="Example_Where_Clause" >

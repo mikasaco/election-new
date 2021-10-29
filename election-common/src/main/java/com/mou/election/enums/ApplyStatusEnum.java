@@ -7,7 +7,9 @@ public enum ApplyStatusEnum {
 
     PASS("PASS", "通过"),
 
-    REJECTED("REJECTED", "拒绝");
+    REJECTED("REJECTED", "拒绝"),
+
+    END("END","复核");
 
 
     private String code;
