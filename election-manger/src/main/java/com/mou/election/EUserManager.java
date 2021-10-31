@@ -1,15 +1,14 @@
 package com.mou.election;
 
+import com.alibaba.fastjson.JSONObject;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.github.pagehelper.util.StringUtil;
+import com.mou.election.constants.EConstants;
 import com.mou.election.convert.EroleConvert;
 import com.mou.election.convert.EuserConvert;
-import com.mou.election.dal.domian.EroleDO;
-import com.mou.election.dal.domian.EroleDOExample;
-import com.mou.election.dal.domian.EuserDO;
-import com.mou.election.dal.domian.EuserDOExample;
+import com.mou.election.dal.domian.*;
 import com.mou.election.dal.mapper.EuserDOMapper;
 import com.mou.election.enums.ErrorCodeEnum;
 import com.mou.election.exception.EbizException;
@@ -164,6 +163,31 @@ public class EUserManager {
             return null;
         }
         return euserDOS.stream().map(EuserConvert::do2dto).collect(Collectors.toList());
+    }
+
+    public List<EUserDTO> getUserManagerAll(){
+        EuserDOExample euserDOExample = new EuserDOExample();
+        EuserDOExample.Criteria criteria = euserDOExample.createCriteria();
+        criteria.andIdIsNotNull();
+        List<EuserDO> userList = euserDOMapper.selectByExample(euserDOExample).stream()
+                .filter(user->hasUserManager(user.getFeature())).collect(Collectors.toList());
+        return userList.stream().map(EuserConvert::do2dto).collect(Collectors.toList());
+    }
+
+    public boolean hasUserManager(String feature){
+        Map<String, Object> map = JSONObject.parseObject(feature, Map.class);
+        boolean has = false;
+        List<String> roleCodes = JSONObject.parseArray((String) map.get(EConstants.ROLE), String.class);
+        if (CollectionUtils.isEmpty(roleCodes)) {
+            return has;
+        }
+        for(String roleName : roleCodes) {
+            if(EConstants.ADMIN.equals(roleName)) {
+                has = true;
+                break;
+            }
+        }
+        return has;
     }
 
     public Integer count(EUserDTO userDTO){

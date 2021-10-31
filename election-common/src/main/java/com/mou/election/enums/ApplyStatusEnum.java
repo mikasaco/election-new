@@ -5,11 +5,11 @@ import com.mou.election.exception.EbizException;
 public enum ApplyStatusEnum {
     PROCESSING("PROCESSING", "审核中"),
 
-    PASS("PASS", "通过"),
+    PASS("PASS", "已通过,待复核"),
 
     REJECTED("REJECTED", "拒绝"),
 
-    END("END","复核");
+    END("END","已完成");
 
 
     private String code;

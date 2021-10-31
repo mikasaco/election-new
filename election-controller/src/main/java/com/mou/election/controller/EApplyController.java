@@ -43,6 +43,7 @@ public class EApplyController {
         Long userId = TokenUtils.getUserIdByToken(httpServletRequest.getHeader("token"));
         request.setUserId(userId);
         applyService.add(RequestConvert.applyRequest2DTO(request));
+
         return EResult.newSuccessInstance(Boolean.TRUE);
     }
 

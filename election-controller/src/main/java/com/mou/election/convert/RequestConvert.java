@@ -178,4 +178,10 @@ public class RequestConvert {
         return resultDTO;
     }
 
+    public static EOrgUserCountDTO orgUserRequestToDTO(EOrgUserCountRequest orgUserCountRequest){
+        EOrgUserCountDTO eOrgUserCountDTO = new EOrgUserCountDTO();
+        BeanUtils.copyProperties(orgUserCountRequest,eOrgUserCountDTO);
+        return eOrgUserCountDTO;
+    }
+
 }

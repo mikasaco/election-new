@@ -8,4 +8,8 @@ public interface WxTemplateService {
     List getTemplateList();
 
     boolean sendWxMessage(WxSendMessageDTO wxSendMessageDTO);
+
+    WxSendMessageDTO getUserManagerAuditMessage();
+
+    WxSendMessageDTO getOrgMessageNotifyByMonth(long orgId,String thing2);
 }

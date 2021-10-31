@@ -2,14 +2,17 @@ package com.mou.election.service.impl;
 
 import com.github.pagehelper.PageInfo;
 import com.mou.election.EApplyManager;
+import com.mou.election.constants.EConstants;
 import com.mou.election.enums.ApplyStatusEnum;
 import com.mou.election.enums.ErrorCodeEnum;
 import com.mou.election.exception.EbizException;
 import com.mou.election.model.EApplyDTO;
 import com.mou.election.model.EPermissionDTO;
 import com.mou.election.model.EUserDTO;
+import com.mou.election.model.WxSendMessageDTO;
 import com.mou.election.service.EApplyService;
 import com.mou.election.service.EuserService;
+import com.mou.election.service.WxTemplateService;
 import com.mou.election.utils.TokenUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,6 +29,8 @@ public class EApplyServiceImpl implements EApplyService {
 
     @Autowired
     private EuserService euserService;
+    @Autowired
+    private WxTemplateService wxTemplateService;
 
 
     @Override
@@ -38,7 +43,9 @@ public class EApplyServiceImpl implements EApplyService {
             throw new EbizException(ErrorCodeEnum.PROCESSIONG_APPLY_EXIST);
         }
         applyDTO.setStatus(ApplyStatusEnum.PROCESSING);
+        //applyDTO.setSendStatus(EConstants.APPLY_SEND_STATUS);
         applyManager.add(applyDTO);
+        wxTemplateService.sendWxMessage(wxTemplateService.getUserManagerAuditMessage());
     }
 
     @Override

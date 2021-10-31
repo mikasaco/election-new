@@ -49,4 +49,6 @@ public class EApplyDTO extends BaseDTO{
     private List<Long> userIds;
 
     private Date delayElectionDate;
+
+    private String sendStatus;
 }

@@ -4,12 +4,17 @@ import com.alibaba.excel.util.StringUtils;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.auth0.jwt.JWT;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.github.pagehelper.util.StringUtil;
 import com.mou.election.EorganizationManager;
 import com.mou.election.EroleManager;
 import com.mou.election.EUserManager;
 import com.mou.election.constants.EConstants;
+import com.mou.election.convert.EmessageConvert;
+import com.mou.election.convert.EuserConvert;
+import com.mou.election.dal.domian.EuserMessageDO;
 import com.mou.election.enums.ErrorCodeEnum;
 import com.mou.election.enums.LoginTypeEnum;
 import com.mou.election.exception.EbizException;
@@ -29,6 +34,7 @@ import javax.swing.text.StyledEditorKit;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Created by 沈林强(四笠) on 2021/7/3.
@@ -260,6 +266,7 @@ public class EuserServiceImpl implements EuserService {
 
     public boolean judgeHasAuth(EUserDTO user) {
         EUserDTO managerUserDTO =  getManagerUser();
+        this.convertPermissionAndRole(managerUserDTO);
         if (!CollectionUtils.isEmpty(managerUserDTO.getPermissionDTOS())) {
             for (EPermissionDTO permissionDTO : managerUserDTO.getPermissionDTOS()) {
                 if ("query_all_user".equalsIgnoreCase(permissionDTO.getPermissionCode())) {
@@ -274,4 +281,21 @@ public class EuserServiceImpl implements EuserService {
     public Integer count() {
         return userManager.count(new EUserDTO());
     }
+
+    public PageInfo<EUserDTO>  getOrgUserCount(EOrgUserCountDTO orgUserCountDTO) {
+        if(orgUserCountDTO.getCurrentPageNo() == 0) {
+            orgUserCountDTO.setCurrentPageNo(ElectionConstants.PAGE_DEFAULT_INDEX);
+        }
+        if(orgUserCountDTO.getPageSize() == 0) {
+            orgUserCountDTO.setPageSize(ElectionConstants.PAGE_DEFAULT_SIZE);
+        }
+
+        Page<EUserDTO> page = PageHelper.startPage(orgUserCountDTO.getCurrentPageNo(),orgUserCountDTO.getPageSize())
+                .doSelectPage(()->userManager.getUserByOrgId(orgUserCountDTO.getOrganizationId()));
+        PageInfo pageInfo = new PageInfo();
+        pageInfo.setTotal(page.getTotal());
+        pageInfo.setList(page.getResult());
+        return pageInfo;
+    }
+
 }

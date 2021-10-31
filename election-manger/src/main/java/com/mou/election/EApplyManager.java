@@ -48,6 +48,7 @@ public class EApplyManager {
         applyDO.setGmtModified(new Date());
         applyDO.setStatus("PROCESSING");
         applyDOMapper.insert(applyDO);
+
     }
 
     public void update(EApplyDTO applyDTO) {

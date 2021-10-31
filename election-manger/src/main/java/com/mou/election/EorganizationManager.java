@@ -108,11 +108,7 @@ public class EorganizationManager {
     }
 
     private int countChangeDays(Date changeDate) {
-        Calendar c1 = Calendar.getInstance();
-        Calendar c2 = Calendar.getInstance();
-        c2.setTime(changeDate);
-        int day = c1.get(Calendar.DATE);
-        int oldDay = c2.get(Calendar.DATE);
-        return oldDay-day;
+        int days = (int) ((changeDate.getTime() - new Date().getTime()) / (1000*3600*24));
+        return days;
     }
 }

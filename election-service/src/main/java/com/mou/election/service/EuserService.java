@@ -1,10 +1,12 @@
 package com.mou.election.service;
 
 import com.github.pagehelper.PageInfo;
+import com.mou.election.model.EOrgUserCountDTO;
 import com.mou.election.model.EUserDTO;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by 沈林强(四笠) on 2021/7/3.
@@ -35,4 +37,6 @@ public interface EuserService {
     PageInfo<EUserDTO> pageQuery(HttpServletRequest httpServletRequest,EUserDTO queryDTO);
 
     Integer count();
+
+    PageInfo<EUserDTO> getOrgUserCount(EOrgUserCountDTO orgUserCountDTO);
 }

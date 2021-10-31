@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Slf4j
-@Component
+//@Component
 public class ChangeTermThreadRunner implements ApplicationRunner {
     @Autowired
     private EuserDOMapper euserDOMapper;

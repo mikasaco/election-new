@@ -1,14 +1,13 @@
 package com.mou.election.controller;
 
+import com.github.pagehelper.Page;
 import com.github.pagehelper.PageInfo;
 import com.mou.election.EUserManager;
 import com.mou.election.annotation.PassToken;
 import com.mou.election.convert.RequestConvert;
 import com.mou.election.convert.ResponseConvert;
-import com.mou.election.enums.LoginTypeEnum;
-import com.mou.election.model.EPageResult;
-import com.mou.election.model.EResult;
-import com.mou.election.model.EUserDTO;
+import com.mou.election.model.*;
+import com.mou.election.model.request.EOrgUserCountRequest;
 import com.mou.election.model.request.EUserReqeust;
 import com.mou.election.model.vo.EUserLoginVO;
 import com.mou.election.model.vo.EUserVO;
@@ -22,7 +21,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -111,6 +112,14 @@ public class EUserController {
         PageInfo<EUserDTO> pageInfo = euserService.pageQuery(httpServletRequest,RequestConvert.userRequest2DTO(request));
         List<EUserVO> eroleVOS = pageInfo.getList().stream().map(ResponseConvert::userDTO2VO).collect(Collectors.toList());
         return EPageResult.newSuccessInstance(pageInfo.getTotal(), eroleVOS);
+    }
+
+    @RequestMapping("orgUserCount")
+    public EResult<Object> countOrgId(@RequestBody EOrgUserCountRequest userCount) {
+        EOrgUserCountDTO eOrgUserCountDTO = RequestConvert.orgUserRequestToDTO(userCount);
+        PageInfo<EUserDTO> userPage = euserService.getOrgUserCount(eOrgUserCountDTO);
+//userPage.getList().stream().map(ResponseConvert::userDTO2VO)
+        return EPageResult.newSuccessInstance(userPage.getTotal());
     }
 
 }
